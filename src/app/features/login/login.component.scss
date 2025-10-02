@@ -1,0 +1,152 @@
+html {
+	height: 100dvh;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	box-sizing: border-box;
+}
+body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+*, *::before, *::after {
+	box-sizing: border-box;
+}
+.logo-img {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 1rem;
+}
+.logo-img img {
+	width: 90px;
+	height: 90px;
+	border-radius: 50%;
+	box-shadow: 0 2px 12px rgba(108,99,255,0.25);
+	object-fit: cover;
+	background: #232526;
+	border: 3px solid #6c63ff;
+}
+.app-name {
+	text-align: center;
+	font-size: 2rem;
+	font-weight: 700;
+	color: #6c63ff;
+	margin-bottom: 1.2rem;
+	letter-spacing: 1px;
+}
+
+
+
+.login-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 95dvh;
+	margin: 0;
+	padding: 0;
+}
+
+.login-card {
+	width: 100%;
+	max-width: 400px;
+	box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+	border-radius: 16px;
+	margin: 0 auto;
+}
+
+
+.login-form {
+	display: flex;
+	flex-direction: column;
+	padding: 2rem 2.5rem;
+}
+
+@media (max-width: 600px) {
+	.login-card {
+		max-width: 95vw;
+		border-radius: 10px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+	}
+	.login-form {
+		padding: 1.2rem 0.5rem;
+	}
+	.logo-img img {
+		width: 60px;
+		height: 60px;
+	}
+	.app-name {
+		font-size: 1.3rem;
+	}
+	.login-form h2 {
+		font-size: 1.1rem;
+	}
+	.login-btn {
+		font-size: 0.95rem;
+		padding: 0.7rem;
+	}
+}
+
+.logo {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 1rem;
+}
+
+.login-form h2 {
+	margin-bottom: 1.5rem;
+	color: #fff;
+	text-align: center;
+	font-weight: 700;
+}
+
+.form-group {
+	margin-bottom: 1.2rem;
+	display: flex;
+	flex-direction: column;
+}
+
+
+.p-input-icon-left {
+	width: 100%;
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.p-inputtext {
+	width: 100%;
+	padding-left: 1rem;
+	background: #232526;
+	color: #fff;
+	border: 1px solid #444;
+	border-radius: 8px;
+}
+
+.p-inputtext:focus {
+	border-color: #6c63ff;
+}
+
+.p-input-icon-left > i {
+	position: absolute;
+	left: 0.8rem;
+	top: 50%;
+	transform: translateY(-50%);
+	color: #6c63ff;
+	font-size: 1.2rem;
+	pointer-events: none;
+}
+
+.error {
+	color: #e74c3c;
+	font-size: 0.85rem;
+	margin-top: 0.3rem;
+}
+
+.login-btn {
+	margin-top: 1.2rem;
+	width: 100%;
+} 
