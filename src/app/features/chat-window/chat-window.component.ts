@@ -1,16 +1,22 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MarkdownModule } from 'ngx-markdown';
+import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { InputTextModule } from 'primeng/inputtext';
+import { GlobalService } from '../services/global.service';
 
-interface Message { role: 'user' | 'assistant'; text: string; }
+interface Message {
+  role: 'user' | 'assistant';
+  text: string;
+  isCode?: boolean; // indicates code block
+}
 
 @Component({
   selector: 'app-chat-window',
   standalone: true,
-  imports: [CommonModule, ButtonModule, InputTextModule, FormsModule, CardModule],
+  imports: [CommonModule, FormsModule, CardModule, InputTextModule, ButtonModule, MarkdownModule],
   templateUrl: './chat-window.component.html',
   styleUrls: ['./chat-window.component.scss']
 })
@@ -18,54 +24,78 @@ export class ChatWindowComponent {
   @ViewChild('scrollEl', { static: false }) scrollEl!: ElementRef<HTMLElement>;
   username = 'Pravudatta';
 
-  messages: Message[] = [
-    // { role: 'assistant', text: 'Hi! I\'m Nilachakra Assistant. Ask me anything.' },
-    // { role: 'user', text: 'How do I center a div in CSS?' },
-    // { role: 'assistant', text: 'Use flexbox: set parent display:flex; align-items:center; justify-content:center; and set a width/height to the child.' },
-    // { role: 'user', text: 'Explain SOLID principles briefly.' },
-    // { role: 'assistant', text: 'SOLID: Single responsibility, Open/Closed, Liskov substitution, Interface segregation, Dependency inversion.' }
-  ];
-
+  messages: Message[] = [];
   input = '';
   isThinking = false;
 
+  // Predefined Q&A (including a code example)
+  dummyQA: { [key: string]: string } = {
+    'hi': 'Hello! I\'m Nilachakra Assistant. How can I help you today?',
+    'hello': 'Hi there! Ask me anything about Angular or TypeScript.',
+    'what is angular': 'Angular is a TypeScript-based front-end framework for building web applications.',
+    'show code': '```ts\nconsole.log("Hello World!");\nfunction add(a: number, b: number){ return a + b; }\n```'
+  };
+  constructor(private globalService: GlobalService) { }
+  ngOnInit() {
+    this.globalService.chat$.subscribe(chat => {
+      if (chat === 'newChat') {
+        this.messages = [];
+      }
+    });
+  }
   send() {
-    const text = this.input && this.input.trim();
+    const text = this.input?.trim();
     if (!text) return;
+
     const userMsg: Message = { role: 'user', text };
     this.messages.push(userMsg);
     this.input = '';
     this.scrollToBottom();
-    this.simulateAssistantResponse(text);
-  }
 
-  sendSuggestion(text: string) {
-    this.input = text;
-    this.send();
+    this.simulateAssistantResponse(text.toLowerCase());
   }
 
   simulateAssistantResponse(userText: string) {
-    this.isThinking = true;
-    // simple simulated response logic with delay
-    setTimeout(() => {
-      const reply: Message = {
-        role: 'assistant',
-        text: `You asked: "${userText}". This is a simulated reply from Nilachakra Assistant.`
-      };
-      this.messages.push(reply);
+    const replyText = this.dummyQA[userText] || 'Sorry, I do not have an answer for that.';
+
+    // Detect code block
+    const isCode = replyText.startsWith('```');
+
+    const assistantMsg: Message = { role: 'assistant', text: '', isCode };
+    this.messages.push(assistantMsg);
+    this.scrollToBottom();
+
+    if (isCode) {
+      // Render code instantly
+      assistantMsg.text = replyText;
       this.isThinking = false;
       this.scrollToBottom();
-    }, 900);
+      return;
+    }
+
+    // Typewriter effect for plain text
+    this.isThinking = true;
+    let i = 0;
+    const typingSpeed = 30;
+
+    const interval = setInterval(() => {
+      if (i < replyText.length) {
+        assistantMsg.text += replyText.charAt(i);
+        i++;
+        this.scrollToBottom();
+      } else {
+        clearInterval(interval);
+        this.isThinking = false;
+      }
+    }, typingSpeed);
   }
 
   scrollToBottom() {
     setTimeout(() => {
-      try {
-        const el = this.scrollEl?.nativeElement;
-        if (el) el.scrollTop = el.scrollHeight;
-      } catch (e) {
-        // ignore
-      }
+      const el = this.scrollEl?.nativeElement;
+      if (el) el.scrollTop = el.scrollHeight;
     }, 50);
   }
+
+
 }
