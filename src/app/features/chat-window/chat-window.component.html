@@ -1,0 +1,19 @@
+<section class="chat-window">
+  <div *ngIf="messages.length === 0" class="welcome-message">
+    <h2 class="typing-effect">Hi {{ username }}</h2>
+    <p>Welcome to Nilachakra AI. Feel free to ask me anything!</p>
+  </div>
+  <div class="messages" #scrollEl>
+    <div *ngFor="let m of messages" class="message" [ngClass]="m.role">
+      <div class="bubble">
+        <div class="text">{{ m.text }}</div>
+      </div>
+    </div>
+    <div *ngIf="isThinking" class="message assistant typing">Nilachakra Assistant is typing...</div>
+  </div>
+
+  <div class="composer">
+    <input pInputText type="text" [(ngModel)]="input" placeholder="Ask anything..." (keydown.enter)="send()" />
+    <button pButton type="button" icon="pi pi-send" (click)="send()" [disabled]="!input.trim()"></button>
+  </div>
+</section>

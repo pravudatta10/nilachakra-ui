@@ -1,0 +1,12 @@
+<div class="chat-page" [class.mobile-open]="mobileSidebarOpen">
+  <app-chat-sidebar></app-chat-sidebar>
+
+  <div class="main">
+      <app-chat-topbar (toggleSidebar)="toggleMobileSidebar()" (selectedModelChange)="onModelSelected($event)"></app-chat-topbar>
+    <div class="center-stage">
+      <app-chat-window></app-chat-window>
+    </div>
+  </div>
+  <div class="mobile-overlay" *ngIf="mobileSidebarOpen" (click)="toggleMobileSidebar(false)"></div>
+</div>
+

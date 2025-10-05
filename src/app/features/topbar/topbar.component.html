@@ -1,0 +1,17 @@
+<header class="topbar">
+  <div class="topbar-left">
+    <button pButton type="button" icon="pi pi-bars" class="hamburger p-button-text" (click)="toggleSidebar.emit()">
+    </button>
+
+    <div class="model-switch">
+      <p-dropdown [options]="models" [(ngModel)]="selectedModel" optionLabel="label" optionValue="value"
+        placeholder="Select Model" (onChange)="selectModel($event.value)" styleClass="model-dropdown">
+      </p-dropdown>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <button pButton type="button" icon="pi pi-question-circle" label="FAQ" class="p-button-text faq-btn"></button>
+    <button pButton type="button" icon="pi pi-compass" label="Tour" class="p-button-text tour-btn"></button>
+  </div>
+</header>

@@ -1,0 +1,55 @@
+.sidebar {
+  width: 72px;
+  background: #121416;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  padding: 12px 8px;
+  box-shadow: 2px 0 6px rgba(0,0,0,0.6);
+  z-index: 30;
+}
+
+.sidebar-inner {
+  display:flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+}
+
+.sidebar-top {
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+  gap:12px;
+  padding-top: 8px;
+}
+
+.brand-wrap { display:flex; align-items:center; justify-content:center; }
+.logo { width:40px; height:40px; object-fit:contain; }
+.new-chat { background: linear-gradient(180deg,#0fb3b3,#02a0a0); color:#fff; }
+
+.sidebar-nav { margin-top: 28px; display:flex; flex-direction: column; gap: 18px; align-items:center; flex: 1; justify-content: center; }
+.nav-btn { color: #9aa0a6; }
+
+.sidebar-bottom { display:flex; align-items:center; justify-content:center; padding-bottom: 12px; }
+.profile-initials {
+  width: 42px;
+  height: 42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius: 50%;
+  background: linear-gradient(180deg,#0fb3b3,#02a0a0);
+  color: #042424;
+  font-weight: 700;
+}
+
+/* Responsive: collapse sidebar on small screens and make it a drawer */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); transition: transform 240ms ease-in-out; display:block; z-index: 70; }
+  .chat-page.mobile-open .sidebar { transform: translateX(0); }
+}

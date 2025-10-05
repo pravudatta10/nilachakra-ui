@@ -1,4 +1,85 @@
 @import 'primeng/resources/themes/lara-dark-indigo/theme.css';
 @import 'primeng/resources/primeng.min.css';
 @import 'primeicons/primeicons.css';
-/* You can add global styles to this file, and also import other style files */
+
+/* Nilachakra theme variables */
+:root {
+	--nilachakra-bg: #0f1116; /* very dark */
+	--nilachakra-surface: #121827; /* card background */
+	--nilachakra-blue-start: #0b4b86;
+	--nilachakra-blue-end: #073a6a;
+	--nilachakra-muted: #9aa0a6;
+	--nilachakra-text: #e6eefb;
+	--nilachakra-card-shadow: 0 10px 30px rgba(3,10,24,0.6);
+}
+
+html, body {
+	height: 100%;
+	background: var(--nilachakra-bg);
+	color: var(--nilachakra-text);
+}
+
+/* Prevent page-level scrolling; chat content will scroll internally */
+html, body { overflow: hidden; }
+
+/* PrimeNG common overrides to match Nilachakra theme */
+.p-card, .p-panel, .p-dialog .p-dialog-content {
+	background: var(--nilachakra-surface) !important;
+	color: var(--nilachakra-text) !important;
+	box-shadow: var(--nilachakra-card-shadow) !important;
+	border-radius: 10px !important;
+}
+
+.p-button,
+.p-button.p-button-text {
+	color: var(--nilachakra-text) !important;
+}
+
+.p-button:not(.p-button-text) {
+	background: linear-gradient(180deg,var(--nilachakra-blue-start),var(--nilachakra-blue-end)) !important;
+	border: none !important;
+	box-shadow: 0 6px 18px rgba(11,75,134,0.18) !important;
+}
+
+.p-inputtext,
+.p-dropdown .p-dropdown-label,
+.p-inputtextarea,
+textarea {
+	background: rgba(255,255,255,0.02) !important;
+	color: var(--nilachakra-text) !important;
+	border: 1px solid rgba(255,255,255,0.04) !important;
+}
+
+/* Dropdown menu / small menus */
+.model-menu,
+.p-dropdown-items,
+.p-overlaypanel {
+	background: var(--nilachakra-surface) !important;
+	color: var(--nilachakra-text) !important;
+	border: 1px solid rgba(255,255,255,0.04) !important;
+}
+
+/* Make p-avatar fall back to initials style consistent */
+.p-avatar {
+	background: linear-gradient(180deg,var(--nilachakra-blue-start),var(--nilachakra-blue-end)) !important;
+	color: #eaf6ff !important;
+	border-radius: 50% !important;
+}
+
+/* Chat bubble defaults */
+.bubble { background: rgba(255,255,255,0.03); color: var(--nilachakra-text); }
+.message.user .bubble { background: linear-gradient(180deg,var(--nilachakra-blue-start),var(--nilachakra-blue-end)); color: #eaf6ff; }
+
+/* Floating composer style override (in case PrimeNG buttons inside) */
+.composer { background: rgba(15,17,22,0.95) !important; }
+
+/* Ensure consistent scrollbar look on messages */
+.messages::-webkit-scrollbar { width: 10px; }
+.messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.03); border-radius: 10px; }
+
+/* Small responsive tweaks */
+@media (max-width: 420px) {
+	.composer { width: calc(100% - 32px) !important; left: 50% !important; transform: translateX(-50%) !important; }
+}
+
+/* You can add more overrides below for other PrimeNG elements if needed */

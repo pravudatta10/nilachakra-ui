@@ -8,7 +8,7 @@ export const routes: Routes = [
             import('./features/features.module').then(m => m.FeaturesModule)
     },
     {
-        path: 'features',
+        path: '',
         loadChildren: () =>
             import('./features/features.module').then(m => m.FeaturesModule)
     },
