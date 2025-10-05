@@ -18,7 +18,6 @@
   flex-direction: column;
   gap: 12px;
   padding-bottom: 150px;
-  /* space for composer */
 }
 
 .message {
@@ -95,7 +94,6 @@
   }
 }
 
-/* Welcome message typing effect */
 .welcome-message {
   position: absolute;
   inset: 0;
@@ -110,7 +108,7 @@
 }
 
 .welcome-message h2 {
-  color: #ffffff;
+  color: #fff;
   font-weight: 700;
   font-size: 2.8rem;
   margin-bottom: 16px;
@@ -119,13 +117,11 @@
   border-right: 0.15em solid #00bcd4;
   width: 14ch;
   animation: typing 3s steps(14), blink-caret 0.75s step-end infinite;
-  text-shadow:
-    1px 1px 2px rgba(0, 0, 0, 0.7),
-    2px 2px 4px rgba(0, 0, 0, 0.6);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7), 2px 2px 4px rgba(0, 0, 0, 0.6);
 }
 
 .welcome-message p {
-  color: #cccccc;
+  color: #ccc;
   font-size: 1.2rem;
   margin-top: 8px;
 }
@@ -150,7 +146,6 @@
   }
 }
 
-/* Typing dots inline */
 .typing-dots {
   display: inline-flex;
   gap: 3px;
@@ -178,37 +173,16 @@
 }
 
 @keyframes bounce {
-
-  0%,
-  80%,
-  100% {
-    transform: scale(0);
-    opacity: 0.3;
+  0%, 80%, 100% { 
+    transform: scale(0); 
+    opacity: 0.3; 
   }
-
-  40% {
-    transform: scale(1);
-    opacity: 1;
+  40% { 
+    transform: scale(1); 
+    opacity: 1; 
   }
 }
 
-@media (max-width: 768px) {
-  .chat-window {
-    height: calc(100vh - 56px);
-    width: 100%;
-  }
-
-  .bubble {
-    max-width: 86%;
-  }
-
-  .composer {
-    width: calc(100% - 48px);
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 18px;
-  }
-}
 
 .code-block {
   position: relative;
@@ -238,4 +212,22 @@
 
 .copy-btn:hover {
   background: #00a2c7;
+}
+
+@media(max-width:768px) {
+  .chat-window {
+    height: calc(100vh - 56px);
+    width: 100%;
+  }
+
+  .bubble {
+    max-width: 86%;
+  }
+
+  .composer {
+    width: calc(100% - 48px);
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 18px;
+  }
 }

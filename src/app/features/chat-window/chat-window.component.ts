@@ -1,16 +1,19 @@
-import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MarkdownModule } from 'ngx-markdown';
-import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { MarkdownModule } from 'ngx-markdown';
+import Prism from 'prismjs';
 import { GlobalService } from '../services/global.service';
 
 interface Message {
+  id: number;
   role: 'user' | 'assistant';
   text: string;
-  isCode?: boolean; // indicates code block
+  isCode?: boolean;
+  isTyping?: boolean;
 }
 
 @Component({
@@ -26,14 +29,13 @@ export class ChatWindowComponent {
 
   messages: Message[] = [];
   input = '';
-  isThinking = false;
 
-  // Predefined Q&A (including a code example)
+  // Dummy Q&A for testing
   dummyQA: { [key: string]: string } = {
     'hi': 'Hello! I\'m Nilachakra Assistant. How can I help you today?',
     'hello': 'Hi there! Ask me anything about Angular or TypeScript.',
     'what is angular': 'Angular is a TypeScript-based front-end framework for building web applications.',
-    'show code': '```ts\nconsole.log("Hello World!");\nfunction add(a: number, b: number){ return a + b; }\n```'
+    'show code': '```ts\nconsole.log("Hello World!");\nfunction sum(a: number, b: number) { return a + b; }\n```'
   };
   constructor(private globalService: GlobalService) { }
   ngOnInit() {
@@ -43,41 +45,41 @@ export class ChatWindowComponent {
       }
     });
   }
+
   send() {
     const text = this.input?.trim();
     if (!text) return;
 
-    const userMsg: Message = { role: 'user', text };
-    this.messages.push(userMsg);
+    // Push user message
+    this.messages.push({ id: this.messages.length, role: 'user', text });
     this.input = '';
     this.scrollToBottom();
 
+    // Simulate assistant response
     this.simulateAssistantResponse(text.toLowerCase());
   }
 
   simulateAssistantResponse(userText: string) {
     const replyText = this.dummyQA[userText] || 'Sorry, I do not have an answer for that.';
-
-    // Detect code block
     const isCode = replyText.startsWith('```');
 
-    const assistantMsg: Message = { role: 'assistant', text: '', isCode };
+    const msgIndex = this.messages.length;
+    const assistantMsg: Message = { id: msgIndex, role: 'assistant', text: '', isCode, isTyping: !isCode };
     this.messages.push(assistantMsg);
     this.scrollToBottom();
 
     if (isCode) {
       // Render code instantly
       assistantMsg.text = replyText;
-      this.isThinking = false;
+      assistantMsg.isTyping = false;
       this.scrollToBottom();
+      setTimeout(() => Prism.highlightAll(), 50);
       return;
     }
 
     // Typewriter effect for plain text
-    this.isThinking = true;
     let i = 0;
     const typingSpeed = 30;
-
     const interval = setInterval(() => {
       if (i < replyText.length) {
         assistantMsg.text += replyText.charAt(i);
@@ -85,7 +87,8 @@ export class ChatWindowComponent {
         this.scrollToBottom();
       } else {
         clearInterval(interval);
-        this.isThinking = false;
+        const msg = this.messages.find(m => m.id === msgIndex);
+        if (msg) msg.isTyping = false; // turn off typing dots for this message
       }
     }, typingSpeed);
   }
@@ -97,5 +100,7 @@ export class ChatWindowComponent {
     }, 50);
   }
 
-
+  copyCode(code: string) {
+    navigator.clipboard.writeText(code.replace(/```[a-z]*\n|```/g, ''));
+  }
 }

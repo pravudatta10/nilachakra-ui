@@ -10,18 +10,23 @@
   <div class="messages" #scrollEl>
     <div *ngFor="let m of messages" class="message" [ngClass]="m.role">
       <div class="bubble">
-        <!-- If code block, render markdown -->
-        <markdown *ngIf="m.isCode" [data]="m.text"></markdown>
 
-        <!-- Plain text with inline dots -->
+        <!-- Code block -->
+        <div *ngIf="m.isCode" class="code-block">
+          <markdown [data]="m.text"></markdown>
+          <button class="copy-btn" (click)="copyCode(m.text)">Copy</button>
+        </div>
+
+        <!-- Plain text -->
         <ng-container *ngIf="!m.isCode">
           <span>{{ m.text }}</span>
-          <span *ngIf="isThinking && m.role === 'assistant'" class="typing-dots">
+          <span *ngIf="m.isTyping" class="typing-dots">
             <span class="dot"></span>
             <span class="dot"></span>
             <span class="dot"></span>
           </span>
         </ng-container>
+
       </div>
     </div>
   </div>
