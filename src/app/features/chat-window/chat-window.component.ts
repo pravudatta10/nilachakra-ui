@@ -7,6 +7,9 @@ import { ButtonModule } from 'primeng/button';
 import { MarkdownModule } from 'ngx-markdown';
 import Prism from 'prismjs';
 import { GlobalService } from '../services/global.service';
+import { Observable } from 'rxjs';
+import { HttpClientModule } from '@angular/common/http';
+import { ChatResponse } from '../interfaces/chat-response';
 
 interface Message {
   id: number;
@@ -16,10 +19,27 @@ interface Message {
   isTyping?: boolean;
 }
 
+interface AskAIRequest {
+  query: string;
+  modelName: string;
+  modelFamily: string;
+}
+
+interface AskAIResponse {
+  answer: string;
+  modelName: string;
+  modelFamily: string;
+  promptToken: number;
+  completionToken: number;
+  totalToken: number;
+  error?: any;
+  message?: string;
+}
+
 @Component({
   selector: 'app-chat-window',
   standalone: true,
-  imports: [CommonModule, FormsModule, CardModule, InputTextModule, ButtonModule, MarkdownModule],
+  imports: [CommonModule, FormsModule, CardModule, InputTextModule, ButtonModule, MarkdownModule, HttpClientModule],
   templateUrl: './chat-window.component.html',
   styleUrls: ['./chat-window.component.scss']
 })
@@ -28,15 +48,8 @@ export class ChatWindowComponent {
   username = 'Pravudatta';
 
   messages: Message[] = [];
-  input = '';
+  userChatMsg = '';
 
-  // Dummy Q&A for testing
-  dummyQA: { [key: string]: string } = {
-    'hi': 'Hello! I\'m Nilachakra Assistant. How can I help you today?',
-    'hello': 'Hi there! Ask me anything about Angular or TypeScript.',
-    'what is angular': 'Angular is a TypeScript-based front-end framework for building web applications.',
-    'show code': '```ts\nconsole.log("Hello World!");\nfunction sum(a: number, b: number) { return a + b; }\n```'
-  };
   constructor(private globalService: GlobalService) { }
   ngOnInit() {
     this.globalService.chat$.subscribe(chat => {
@@ -45,52 +58,56 @@ export class ChatWindowComponent {
       }
     });
   }
-
   send() {
-    const text = this.input?.trim();
+    const text = this.userChatMsg?.trim();
     if (!text) return;
 
     // Push user message
     this.messages.push({ id: this.messages.length, role: 'user', text });
-    this.input = '';
+    this.userChatMsg = '';
     this.scrollToBottom();
 
-    // Simulate assistant response
-    this.simulateAssistantResponse(text.toLowerCase());
-  }
-
-  simulateAssistantResponse(userText: string) {
-    const replyText = this.dummyQA[userText] || 'Sorry, I do not have an answer for that.';
-    const isCode = replyText.startsWith('```');
-
+    // Prepare assistant message with typing effect
     const msgIndex = this.messages.length;
-    const assistantMsg: Message = { id: msgIndex, role: 'assistant', text: '', isCode, isTyping: !isCode };
+    const assistantMsg: Message = { id: msgIndex, role: 'assistant', text: '', isTyping: true };
     this.messages.push(assistantMsg);
     this.scrollToBottom();
 
-    if (isCode) {
-      // Render code instantly
-      assistantMsg.text = replyText;
-      assistantMsg.isTyping = false;
-      this.scrollToBottom();
-      setTimeout(() => Prism.highlightAll(), 50);
-      return;
-    }
+    // API call
+    this.globalService.askAI({
+      query: text,
+      modelName: 'Grok',
+      modelFamily: 'meta-llama/llama-3.3-8b-instruct:free'
+    }).subscribe({
+      next: (res: ChatResponse) => {
+        const fullText = res.answer;
+        assistantMsg.isCode = fullText.startsWith('```');
 
-    // Typewriter effect for plain text
-    let i = 0;
-    const typingSpeed = 30;
-    const interval = setInterval(() => {
-      if (i < replyText.length) {
-        assistantMsg.text += replyText.charAt(i);
-        i++;
+        // Typewriter effect
+        let i = 0;
+        const typingSpeed = 20;
+        const interval = setInterval(() => {
+          if (i < fullText.length) {
+            assistantMsg.text += fullText.charAt(i);
+            i++;
+            this.scrollToBottom();
+          } else {
+            clearInterval(interval);
+            assistantMsg.isTyping = false;
+
+            // Highlight code if present
+            if (assistantMsg.isCode) {
+              setTimeout(() => Prism.highlightAll(), 50);
+            }
+          }
+        }, typingSpeed);
+      },
+      error: () => {
+        assistantMsg.text = 'Sorry, something went wrong!';
+        assistantMsg.isTyping = false;
         this.scrollToBottom();
-      } else {
-        clearInterval(interval);
-        const msg = this.messages.find(m => m.id === msgIndex);
-        if (msg) msg.isTyping = false; // turn off typing dots for this message
       }
-    }, typingSpeed);
+    });
   }
 
   scrollToBottom() {
