@@ -23,7 +23,6 @@
   <!-- Composer -->
   <div class="composer">
     <input pInputText type="text" [(ngModel)]="userChatMsg" placeholder="Ask anything..." (keydown.enter)="send()" />
-    <button pButton type="button" icon="pi pi-send" (click)="send()" [disabled]="!userChatMsg.trim()">
-    </button>
+    <button pButton type="button" icon="pi pi-send" (click)="send()" [disabled]="!userChatMsg.trim()"></button>
   </div>
 </section>

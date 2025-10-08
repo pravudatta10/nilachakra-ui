@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
-import { MarkdownModule } from 'ngx-markdown'; 
+import { MarkdownModule } from 'ngx-markdown';
+import hljs from 'highlight.js';
 import { GlobalService } from '../services/global.service';
 import { ChatResponse } from '../interfaces/chat-response';
 
@@ -35,13 +36,11 @@ export class ChatWindowComponent implements AfterViewChecked {
   messages: Message[] = [];
   userChatMsg = '';
 
-  constructor(private globalService: GlobalService) {}
+  constructor(private globalService: GlobalService) { }
 
   ngOnInit() {
     this.globalService.chat$.subscribe(chat => {
-      if (chat === 'newChat') {
-        this.messages = [];
-      }
+      if (chat === 'newChat') this.messages = [];
     });
   }
 
@@ -96,21 +95,26 @@ export class ChatWindowComponent implements AfterViewChecked {
   }
 
   ngAfterViewChecked() {
-    // Add Copy buttons dynamically to code blocks
-    const codeBlocks = this.scrollEl?.nativeElement.querySelectorAll('pre');
-    codeBlocks?.forEach((block: Element) => {
-      if (!block.querySelector('.copy-btn')) {
-        const btn = document.createElement('button');
-        btn.innerText = 'Copy';
-        btn.classList.add('copy-btn');
-        btn.addEventListener('click', () => {
-          const codeText = block.querySelector('code')?.textContent || '';
-          navigator.clipboard.writeText(codeText);
-          btn.innerText = 'Copied!';
-          setTimeout(() => (btn.innerText = 'Copy'), 1000);
-        });
-        block.appendChild(btn);
-      }
+    // Highlight all code blocks
+    const codeBlocks = this.scrollEl?.nativeElement.querySelectorAll('pre code');
+    codeBlocks?.forEach((block) => {
+      const codeEl = block as HTMLElement; // <-- cast to HTMLElement
+      hljs.highlightElement(codeEl);
+
+      // Add copy button if not already added
+      // const pre = codeEl.parentElement;
+      // if (pre && !pre.querySelector('.copy-btn')) {
+      //   const btn = document.createElement('button');
+      //   btn.innerText = 'Copy';
+      //   btn.classList.add('copy-btn');
+      //   btn.addEventListener('click', () => {
+      //     navigator.clipboard.writeText(codeEl.textContent || '');
+      //     btn.innerText = 'Copied!';
+      //     setTimeout(() => (btn.innerText = 'Copy'), 1000);
+      //   });
+      //   pre.appendChild(btn);
+      // }
     });
   }
+
 }
