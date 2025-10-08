@@ -1,32 +1,21 @@
 <section class="chat-window">
-
   <!-- Welcome message -->
   <div *ngIf="messages.length === 0" class="welcome-message">
     <h2 class="typing-effect">Hi {{ username }}</h2>
     <p>Welcome to Nilachakra AI. Feel free to ask me anything!</p>
   </div>
 
-  <!-- Chat messages -->
+  <!-- Messages -->
   <div class="messages" #scrollEl>
     <div *ngFor="let m of messages" class="message" [ngClass]="m.role">
       <div class="bubble">
-
-        <!-- Code block -->
-        <div *ngIf="m.isCode" class="code-block">
-          <markdown [data]="m.text"></markdown>
-          <button class="copy-btn" (click)="copyCode(m.text)">Copy</button>
-        </div>
-
-        <!-- Plain text -->
-        <ng-container *ngIf="!m.isCode">
-          <span>{{ m.text }}</span>
-          <span *ngIf="m.isTyping" class="typing-dots">
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-          </span>
-        </ng-container>
-
+        <!-- Render everything with markdown -->
+        <markdown [data]="m.text"></markdown>
+        <span *ngIf="m.isTyping" class="typing-dots">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </span>
       </div>
     </div>
   </div>
@@ -34,7 +23,7 @@
   <!-- Composer -->
   <div class="composer">
     <input pInputText type="text" [(ngModel)]="userChatMsg" placeholder="Ask anything..." (keydown.enter)="send()" />
-    <button pButton type="button" icon="pi pi-send" (click)="send()" [disabled]="!userChatMsg.trim()"></button>
+    <button pButton type="button" icon="pi pi-send" (click)="send()" [disabled]="!userChatMsg.trim()">
+    </button>
   </div>
-
 </section>

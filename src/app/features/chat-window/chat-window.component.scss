@@ -17,13 +17,13 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding-bottom: 150px;
+  padding-bottom: 150px; 
 }
 
 .message {
   display: flex;
   animation: fadeIn 220ms ease forwards;
-  opacity: 0;
+  opacity: 0; 
 }
 
 .message.user {
@@ -35,7 +35,7 @@
 }
 
 .bubble {
-  max-width: 78%;
+  max-width: 90%;
   padding: 12px 14px;
   border-radius: 12px;
   background: rgba(216, 23, 23, 0.04);
@@ -232,3 +232,33 @@
     bottom: 18px;
   }
 }
+/* Code block styling */
+:host ::ng-deep pre {
+  position: relative;
+  background: #1e1e1e !important;
+  // color: #fff !important;
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+:host ::ng-deep pre code {
+  background: none !important;
+}
+
+.copy-btn { 
+  top: 6px;
+  right: 6px;
+  font-size: 12px;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  background: rgba(48, 196, 7, 0.2);
+}
+
