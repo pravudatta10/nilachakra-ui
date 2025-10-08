@@ -3,8 +3,8 @@ import { importProvidersFrom } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';
-import { MarkdownModule } from 'ngx-markdown';
 import { provideHttpClient } from '@angular/common/http';
+import { MarkdownModule } from 'ngx-markdown';
 
 bootstrapApplication(AppComponent, {
   ...appConfig,
@@ -14,4 +14,4 @@ bootstrapApplication(AppComponent, {
     importProvidersFrom(MarkdownModule.forRoot()),
     provideHttpClient()
   ]
-}).catch((err) => console.error(err));
+});
