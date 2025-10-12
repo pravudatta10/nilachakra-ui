@@ -108,7 +108,7 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
   private handleAIResponse(res: ChatResponse, assistantMsg: Message) {
     const fullText = res.answer;
     this.conversationId = res.conversationId;
-
+    assistantMsg.isTyping = false;
     let i = 0;
     const speed = 15; // typing animation speed
     const interval = setInterval(() => {
