@@ -22,7 +22,25 @@
 
   <!-- Composer -->
   <div class="composer">
-    <input pInputText type="text" [(ngModel)]="userChatMsg" placeholder="Ask anything..." (keydown.enter)="send()" />
+    <textarea pInputTextarea [(ngModel)]="userChatMsg" placeholder="Ask anything..." (keydown.enter)="onEnter($event)"
+      (input)="autoGrow($event)" rows="2" class="chat-textarea"></textarea>
+    <button pButton type="button" icon="pi pi-box" (click)="overlayPanel.toggle($event)" pTooltip="Select Model"
+      tooltipPosition="top" tooltipEvent="hover"></button>
     <button pButton type="button" icon="pi pi-send" (click)="send()" [disabled]="!userChatMsg.trim()"></button>
   </div>
+
+  <p-overlayPanel #overlayPanel [dismissable]="true" [style]="{'width':'320px'}">
+    <div class="panel-content">
+      <h3 class="panel-header">Select Model</h3>
+
+      <div class="panel-items">
+        <div class="panel-item" *ngFor="let model of models" [class.selected]="model.modelId === selectedModel.modelId"
+          (click)="selectModel(model)">
+          <span>{{ model.displayName }}</span>
+          <i class="pi pi-check" *ngIf="model.modelId === selectedModel.modelId"></i>
+        </div>
+      </div>
+    </div>
+  </p-overlayPanel>
+
 </section>

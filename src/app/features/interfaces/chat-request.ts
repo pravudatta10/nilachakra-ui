@@ -1,5 +1,7 @@
 export interface ChatRequest {
     query: string;
     modelName: string;
-    modelFamily: string;
+    conversationId: number | null;
+    modelId: number;
+    userName: string;
 }

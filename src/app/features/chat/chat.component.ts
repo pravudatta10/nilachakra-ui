@@ -7,7 +7,7 @@ import { ChatWindowComponent } from '../chat-window/chat-window.component';
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [CommonModule, ChatSidebarComponent, ChatTopbarComponent, ChatWindowComponent],
+  imports: [CommonModule, ChatSidebarComponent, ChatWindowComponent],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss'
 })

@@ -1,13 +1,19 @@
-import { Component, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
+import { TooltipModule } from 'primeng/tooltip';
 import { MarkdownModule } from 'ngx-markdown';
 import hljs from 'highlight.js';
+
 import { GlobalService } from '../services/global.service';
+import { ChatRequest } from '../interfaces/chat-request';
 import { ChatResponse } from '../interfaces/chat-response';
+import { ModelDetails } from '../interfaces/ModelDetails';
 
 interface Message {
   id: number;
@@ -25,22 +31,42 @@ interface Message {
     CardModule,
     InputTextModule,
     ButtonModule,
-    MarkdownModule,
+    InputTextareaModule,
+    OverlayPanelModule,
+    TooltipModule,
+    MarkdownModule
   ],
   templateUrl: './chat-window.component.html',
   styleUrls: ['./chat-window.component.scss']
 })
-export class ChatWindowComponent implements AfterViewChecked {
+export class ChatWindowComponent implements OnInit, AfterViewChecked {
+
+  @ViewChild('overlayPanel') overlayPanel!: OverlayPanel;
   @ViewChild('scrollEl', { static: false }) scrollEl!: ElementRef<HTMLElement>;
+
   username = 'Pravudatta';
   messages: Message[] = [];
   userChatMsg = '';
+  models: ModelDetails[] = [];
+  selectedModel!: ModelDetails;
+  queryPayload!: ChatRequest;
+  conversationId: number | null = null;
 
   constructor(private globalService: GlobalService) { }
 
   ngOnInit() {
+    // Subscribe to new chat events
     this.globalService.chat$.subscribe(chat => {
-      if (chat === 'newChat') this.messages = [];
+      if (chat === 'newChat') {
+        this.messages = [];
+        this.conversationId = null;
+      }
+    });
+
+    // Load models without showing loader
+    this.globalService.getModels(false).subscribe(models => {
+      this.models = models;
+      this.selectedModel = this.models.find(m => m.isDefault) || this.models[0];
     });
   }
 
@@ -48,43 +74,54 @@ export class ChatWindowComponent implements AfterViewChecked {
     const text = this.userChatMsg.trim();
     if (!text) return;
 
+    // Add user message
     this.messages.push({ id: this.messages.length, role: 'user', text });
     this.userChatMsg = '';
     this.scrollToBottom();
 
+    // Add assistant typing message
     const msgIndex = this.messages.length;
     const assistantMsg: Message = { id: msgIndex, role: 'assistant', text: '', isTyping: true };
     this.messages.push(assistantMsg);
     this.scrollToBottom();
 
-    this.globalService.askAI({
+    // Prepare payload
+    this.queryPayload = {
       query: text,
-      modelName: 'Grok',
-      modelFamily: 'meta-llama/llama-3.3-8b-instruct:free'
-    }).subscribe({
-      next: (res: ChatResponse) => {
-        const fullText = res.answer;
-        let i = 0;
-        const speed = 15;
-        const interval = setInterval(() => {
-          if (i < fullText.length) {
-            assistantMsg.text += fullText.charAt(i);
-            i++;
-            assistantMsg.isTyping = false;
-            this.scrollToBottom();
-          } else {
-            clearInterval(interval);
-            assistantMsg.isTyping = false;
-            this.scrollToBottom();
-          }
-        }, speed);
-      },
+      modelName: this.selectedModel.modelName,
+      modelId: this.selectedModel.modelId,
+      conversationId: this.conversationId,
+      userName: this.username
+    };
+
+    // Call AI query (skip loader)
+    this.globalService.aiQueries(this.queryPayload, true).subscribe({
+      next: (res: ChatResponse) => this.handleAIResponse(res, assistantMsg),
       error: () => {
         assistantMsg.text = 'Sorry, something went wrong!';
         assistantMsg.isTyping = false;
         this.scrollToBottom();
       }
     });
+  }
+
+  private handleAIResponse(res: ChatResponse, assistantMsg: Message) {
+    const fullText = res.answer;
+    this.conversationId = res.conversationId;
+
+    let i = 0;
+    const speed = 15; // typing animation speed
+    const interval = setInterval(() => {
+      if (i < fullText.length) {
+        assistantMsg.text += fullText.charAt(i);
+        i++;
+        this.scrollToBottom();
+      } else {
+        clearInterval(interval);
+        assistantMsg.isTyping = false;
+        this.scrollToBottom();
+      }
+    }, speed);
   }
 
   scrollToBottom() {
@@ -95,26 +132,30 @@ export class ChatWindowComponent implements AfterViewChecked {
   }
 
   ngAfterViewChecked() {
-    // Highlight all code blocks
     const codeBlocks = this.scrollEl?.nativeElement.querySelectorAll('pre code');
-    codeBlocks?.forEach((block) => {
-      const codeEl = block as HTMLElement; // <-- cast to HTMLElement
-      hljs.highlightElement(codeEl);
-
-      // Add copy button if not already added
-      // const pre = codeEl.parentElement;
-      // if (pre && !pre.querySelector('.copy-btn')) {
-      //   const btn = document.createElement('button');
-      //   btn.innerText = 'Copy';
-      //   btn.classList.add('copy-btn');
-      //   btn.addEventListener('click', () => {
-      //     navigator.clipboard.writeText(codeEl.textContent || '');
-      //     btn.innerText = 'Copied!';
-      //     setTimeout(() => (btn.innerText = 'Copy'), 1000);
-      //   });
-      //   pre.appendChild(btn);
-      // }
-    });
+    codeBlocks?.forEach(block => hljs.highlightElement(block as HTMLElement));
   }
 
+  autoGrow(event: Event) {
+    const textarea = event.target as HTMLTextAreaElement;
+    textarea.style.height = 'auto';
+    const maxHeight = 72;
+    textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px';
+  }
+
+  onEnter(event: any) {
+    if (!event.shiftKey) {
+      event.preventDefault();
+      this.send();
+    }
+  }
+
+  selectModel(model: ModelDetails) {
+    this.selectedModel = model;
+    this.overlayPanel.hide();
+  }
+
+  togglePanel(event: Event) {
+    this.overlayPanel.toggle(event);
+  }
 }
