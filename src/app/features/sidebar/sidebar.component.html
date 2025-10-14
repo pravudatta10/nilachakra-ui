@@ -4,17 +4,56 @@
       <div class="brand-wrap">
         <img src="assets/images/logo.png" alt="nilachakra" class="logo" />
       </div>
-      <button pButton type="button" icon="pi pi-plus" class="new-chat p-button-rounded" aria-label="New chat" (click)="startNewChat()"></button>
+      <button pButton type="button" icon="pi pi-history" class="new-chat p-button-rounded" aria-label="New chat"
+        (click)="openChatHistoryPanel()"></button>
+
+      <button pButton type="button" icon="pi pi-plus" class="new-chat p-button-rounded" aria-label="New chat"
+        (click)="startNewChat()"></button>
     </div>
 
     <nav class="sidebar-nav" role="navigation">
-      <button pButton type="button" icon="pi pi-search" class="p-button-text nav-btn" aria-label="Home" disabled></button>
-      <button pButton type="button" icon="pi pi-globe" class="p-button-text nav-btn" aria-label="Discover" disabled></button>
-      <button pButton type="button" icon="pi pi-th-large" class="p-button-text nav-btn" aria-label="Spaces" disabled></button>
+      <div class="brand-vertical" aria-label="Nilachakra AI">NILACHAKRA AI</div>
     </nav>
 
     <div class="sidebar-bottom">
       <div class="profile-initials" aria-hidden="false">NA</div>
     </div>
+    <p-dialog header="Chat History" [(visible)]="historyDialog" [modal]="true" [closable]="true" [resizable]="true"
+      [draggable]="true" [style]="{width: '900px', height: '600px'}">
+
+      <div class="history-container">
+        <!-- Left side -->
+        <div class="history-left">
+          <input type="text" pInputText placeholder="Search..." [(ngModel)]="searchText" class="search-box" />
+
+          <button pButton label="Create New Private Chat" icon="pi pi-plus" (click)="startNewChat()"
+            class="full-width my-2"></button>
+
+          <p-table [value]="filteredChatHistory()" [scrollable]="true" scrollHeight="450px">
+            <ng-template pTemplate="body" let-chat>
+              <tr (mouseenter)="loadChatDetail(chat)" [class.hovered]="hoveredChat === chat">
+                <td>{{chat.title}}</td>
+                <td class="time">{{chat.time}}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+        <!-- Right side -->
+        <div class="history-right">
+          <h4>Chat Preview</h4>
+          <div *ngIf="selectedChatDetail">
+            <div *ngFor="let msg of selectedChatDetail.messages">
+              <p><strong>{{msg.sender}}:</strong> {{msg.text}}</p>
+            </div>
+          </div>
+          <div *ngIf="!selectedChatDetail">
+            <p>Select a conversation to preview</p>
+          </div>
+        </div>
+      </div>
+
+    </p-dialog>
+
   </div>
 </aside>
