@@ -18,20 +18,22 @@
     <div class="sidebar-bottom">
       <div class="profile-initials" aria-hidden="false">NA</div>
     </div>
+    <!-- Chat History Dialog -->
     <p-dialog header="Chat History" [(visible)]="historyDialog" [modal]="true" [closable]="true" [resizable]="true"
-      [draggable]="true" [style]="{width: '900px', height: '600px'}">
+      [draggable]="true" position="top" [style]="{ width: '90%', height: '600px' }"
+      [contentStyle]="{ 'overflow-y': 'hidden' }" styleClass="chat-history-dialog">
 
       <div class="history-container">
         <!-- Left side -->
         <div class="history-left">
           <input type="text" pInputText placeholder="Search..." [(ngModel)]="searchText" class="search-box" />
 
-          <button pButton label="Create New Private Chat" icon="pi pi-plus" (click)="startNewChat()"
+          <button pButton label="Start New Chat" icon="pi pi-plus" (click)="startNewChat(true)"
             class="full-width my-2"></button>
 
           <p-table [value]="filteredChatHistory()" [scrollable]="true" scrollHeight="450px">
             <ng-template pTemplate="body" let-chat>
-              <tr (mouseenter)="loadChatDetail(chat)" [class.hovered]="hoveredChat === chat">
+              <tr (click)="loadChatDetail(chat)" [class.hovered]="hoveredChat === chat">
                 <td>{{chat.title}}</td>
                 <td class="time">{{chat.time}}</td>
               </tr>
@@ -40,19 +42,28 @@
         </div>
 
         <!-- Right side -->
-        <div class="history-right">
-          <h4>Chat Preview</h4>
+        <div class="history-right" #scrollEl>
           <div *ngIf="selectedChatDetail">
-            <div *ngFor="let msg of selectedChatDetail.messages">
-              <p><strong>{{msg.sender}}:</strong> {{msg.text}}</p>
+            <h4>Chat Preview</h4>
+            <div *ngFor="let chat of selectedChatDetail" class="message">
+              <div class="bubble user">
+                <strong>You:</strong> {{chat.query}}
+              </div>
+              <div class="bubble ai">
+                <markdown [data]="chat.answer"></markdown>
+              </div>
             </div>
           </div>
-          <div *ngIf="!selectedChatDetail">
+          <div *ngIf="!selectedChatDetail" class="empty-preview">
             <p>Select a conversation to preview</p>
           </div>
         </div>
       </div>
-
+      <div class="continue" *ngIf="selectedChatDetail">
+        <button pButton label="Continue this chat" icon="pi pi-arrow-right" (click)="continueChat()"
+          class="p-button-outlined p-button-sm continue-btn">
+        </button>
+      </div>
     </p-dialog>
 
   </div>

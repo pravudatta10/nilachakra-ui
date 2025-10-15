@@ -84,3 +84,10 @@ textarea {
 }
 
 /* You can add more overrides below for other PrimeNG elements if needed */
+.p-datatable tbody tr {
+  cursor: pointer;
+}
+
+.p-datatable tbody tr:hover {
+  background-color: rgba(0, 150, 136, 0.15);
+}

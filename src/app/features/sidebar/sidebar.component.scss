@@ -148,10 +148,11 @@
 .history-right {
   width: 60%;
   overflow-y: auto;
-  background: #1e1e1e;
+  background: #1d1b1b;
   padding: 12px;
   border-radius: 6px;
   color: #fff;
+  height: 100%;
 }
 
 .hovered {
@@ -162,4 +163,97 @@
 .time {
   font-size: 12px;
   color: #999;
+} 
+.chat-history-dialog {
+  position: fixed !important;
+  bottom: 100px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  margin: 0 !important;
+}
+
+.chat-history-dialog .p-dialog {
+  margin: 0 !important;
+}
+.message {
+  margin-bottom: 16px;
+}
+
+.bubble {
+  padding: 12px;
+  border-radius: 12px;
+  max-width: 100%;
+  white-space: pre-wrap;
+}
+
+.bubble.user {
+  background: #e0f7fa;
+  color: #152220;
+  margin-bottom: 6px;
+}
+
+.bubble.ai {
+  background: #1e1e1e;
+  color: #fff;
+}
+
+markdown {
+  display: block;
+  line-height: 1.5;
+}
+
+markdown pre {
+  background: #1e1e1e;
+  color: #fff;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+markdown code {
+  font-family: 'Fira Code', monospace;
+  font-size: 14px;
+}
+.empty-preview {
+  display: flex;
+  align-items: center;       /* vertical center */
+  justify-content: center;   /* horizontal center */
+  height: 100%;              /* take full height of parent */
+  text-align: center;
+  color: #aaa;
+  font-size: 16px;
+}
+.continue {
+  position: absolute;
+  bottom: 5px;
+  right: 20px;
+}
+
+.continue-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+.search-box {
+  background: #0f1b33;                  /* Dark blue background */
+  color: #e0e6f0;                       /* Light text color */
+  border: 1px solid #1e3a8a;            /* Medium blue border */
+  padding: 8px 12px;
+  border-radius: 6px;
+  width: 100%;
+  transition: all 0.3s ease;
+
+  /* Remove default input styling on focus */
+  outline: none;
+  box-shadow: none;
+}
+
+.search-box::placeholder {
+  color: #8ea0c8;                       /* Soft blue placeholder */
+}
+
+.search-box:focus {
+  border-color: #2563eb;                /* Brighter blue on focus */
+  background: #162447;                  /* Slightly lighter bg */
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.6); /* Glow effect */
 }

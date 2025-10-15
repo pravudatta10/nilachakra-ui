@@ -35,8 +35,11 @@ export class GlobalService {
   }
 
   // --- Chat stream ---
-  private chatSource = new BehaviorSubject<string>(''); // can use BehaviorSubject for latest value
+  private chatSource = new BehaviorSubject<string>('');  
+  private continueChatSource = new BehaviorSubject<number>(0);  
+
   chat$ = this.chatSource.asObservable();
+  continueChat$ = this.continueChatSource.asObservable();
 
   constructor(private http: HttpClient, private responseHandler: ResponseHandlerService) { }
 
@@ -72,6 +75,9 @@ export class GlobalService {
     this.chatSource.next(message);
   }
 
+  continueChat(conversationId: number) {
+    this.continueChatSource.next(conversationId);
+  }
   aiQueries(payload: ChatRequest, skipLoader: boolean = false): Observable<ChatResponse> {
     return this.apiCall<ChatResponse>('/ai/queries', 'POST', payload, undefined, skipLoader);
   }
