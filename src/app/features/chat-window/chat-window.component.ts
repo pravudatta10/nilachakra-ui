@@ -14,14 +14,7 @@ import { GlobalService } from '../services/global.service';
 import { ChatRequest } from '../interfaces/chat-request';
 import { ChatResponse } from '../interfaces/chat-response';
 import { ModelDetails } from '../interfaces/ModelDetails';
-
-interface Message {
-  id: number;
-  role: 'user' | 'assistant';
-  text: string;
-  isTyping?: boolean;
-}
-
+import { Message } from '../interfaces/Message';
 @Component({
   selector: 'app-chat-window',
   standalone: true,
@@ -51,6 +44,7 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
   selectedModel!: ModelDetails;
   queryPayload!: ChatRequest;
   conversationId: number | null = null;
+  isSendDisabled = false;
 
   constructor(private globalService: GlobalService) { }
 
@@ -67,6 +61,22 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
     this.globalService.getModels(false).subscribe(models => {
       this.models = models;
       this.selectedModel = this.models.find(m => m.isDefault) || this.models[0];
+    });
+
+    //Load previous chat if any
+    this.globalService.continueChat$.subscribe(conversationId => {
+      if (conversationId !== 0) {
+        this.conversationId = conversationId;
+        this.globalService.getChatByConversationId(conversationId).subscribe((history) => {
+          history.forEach((msg) => {
+            const msgIndex = this.messages.length;
+            this.messages.push({ id: msgIndex, role: 'user', text: msg.query });
+            this.messages.push({ id: msgIndex + 1, role: 'assistant', text: msg.answer });
+            this.selectedModel = this.models.find(m => m.modelName === msg.modelName) || this.models[0];
+            this.scrollToBottom();
+          });
+        });        
+      }
     });
   }
 
@@ -104,21 +114,23 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
       }
     });
   }
-
   private handleAIResponse(res: ChatResponse, assistantMsg: Message) {
     const fullText = res.answer;
     this.conversationId = res.conversationId;
     assistantMsg.isTyping = false;
+    this.isSendDisabled = true;
     let i = 0;
     const speed = 15; // typing animation speed
     const interval = setInterval(() => {
       if (i < fullText.length) {
         assistantMsg.text += fullText.charAt(i);
-        i++;
+        i++;        
+        console.log("printing");        
         this.scrollToBottom();
       } else {
         clearInterval(interval);
         assistantMsg.isTyping = false;
+        this.isSendDisabled = false;
         this.scrollToBottom();
       }
     }, speed);
