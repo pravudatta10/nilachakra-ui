@@ -1,5 +1,6 @@
 <aside class="sidebar" role="navigation">
   <div class="sidebar-inner">
+    <!-- top section (logo + buttons) - keep your existing markup -->
     <div class="sidebar-top">
       <div class="brand-wrap">
         <img src="assets/images/logo.png" alt="nilachakra" class="logo" />
@@ -18,6 +19,7 @@
     <div class="sidebar-bottom">
       <div class="profile-initials" aria-hidden="false">NA</div>
     </div>
+
     <!-- Chat History Dialog -->
     <p-dialog header="Chat History" [(visible)]="historyDialog" [modal]="true" [closable]="true" [resizable]="true"
       [draggable]="true" position="top" [style]="{ width: '90%', height: '600px' }"
@@ -31,17 +33,39 @@
           <button pButton label="Start New Chat" icon="pi pi-plus" (click)="startNewChat(true)"
             class="full-width my-2"></button>
 
-          <p-table [value]="filteredChatHistory()" [scrollable]="true" scrollHeight="450px">
+          <!-- PrimeNG table (stable layout) -->
+          <p-table [value]="filteredChatHistory()" [scrollable]="true" scrollHeight="450px" class="chat-table"
+            (mouseleave)="openMenuId = null">
             <ng-template pTemplate="body" let-chat>
-              <tr (click)="loadChatDetail(chat)" [class.hovered]="hoveredChat === chat">
-                <td>{{chat.title}}</td>
-                <td class="time">{{chat.time}}</td>
+              <tr (mouseenter)="onRowHover(chat)" (mouseleave)="hoveredChat = null"
+                [class.hovered]="hoveredChat === chat">
+
+                <!-- title cell: inline editing -->
+                <td class="chat-title-cell" (click)="loadChatDetail(chat)">
+                  <div class="title-wrapper">
+                    <input *ngIf="editingChatId === chat.conversationId" type="text" class="edit-input"
+                      [(ngModel)]="chat.editTitle" (blur)="finishRename(chat)" (keydown.enter)="finishRename(chat)" />
+                    <span *ngIf="editingChatId !== chat.conversationId" class="title-text">{{ chat.title }}</span>
+                  </div>
+                </td>
+                <!-- menu column -->
+                <td class="menu-cell" (click)="$event.stopPropagation()">
+                  <button pButton type="button" icon="pi pi-ellipsis-v" class="menu-btn p-button-text p-button-rounded"
+                    *ngIf="hoveredChat === chat" (click)="toggleMenu(chat, $event)">
+                  </button>
+
+                  <!-- small custom menu -->
+                  <div class="row-menu" *ngIf="openMenuId === chat.conversationId" #menuRef>
+                    <button class="menu-item" (click)="startEdit(chat)">Rename</button>
+                    <button class="menu-item danger" (click)="deleteChat(chat)">Delete</button>
+                  </div>
+                </td>
               </tr>
             </ng-template>
           </p-table>
         </div>
 
-        <!-- Right side -->
+        <!-- Right side: preview -->
         <div class="history-right" #scrollEl>
           <div *ngIf="selectedChatDetail">
             <h4>Chat Preview</h4>
@@ -59,12 +83,12 @@
           </div>
         </div>
       </div>
+
       <div class="continue" *ngIf="selectedChatDetail">
         <button pButton label="Continue this chat" icon="pi pi-arrow-right" (click)="continueChat()"
           class="p-button-outlined p-button-sm continue-btn">
         </button>
       </div>
     </p-dialog>
-
   </div>
 </aside>

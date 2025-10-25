@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiBaseUrl: 'https://nilachakra-gateway.onrender.com/brain'
+  apiBaseUrl: 'https://nilachakra-brain-jkhw.onrender.com/brain'
 };

@@ -9,7 +9,7 @@ import { ChatRequest } from '../interfaces/chat-request';
 import { ChatResponse } from '../interfaces/chat-response';
 import { ModelDetails } from '../interfaces/ModelDetails';
 
-export type HttpMethod = 'GET' | 'POST' | 'DELETE';
+export type HttpMethod = 'GET' | 'POST' | 'DELETE' | 'PUT';
 
 @Injectable({ providedIn: 'root' })
 export class GlobalService {
@@ -35,8 +35,8 @@ export class GlobalService {
   }
 
   // --- Chat stream ---
-  private chatSource = new BehaviorSubject<string>('');  
-  private continueChatSource = new BehaviorSubject<number>(0);  
+  private chatSource = new BehaviorSubject<string>('');
+  private continueChatSource = new BehaviorSubject<number>(0);
 
   chat$ = this.chatSource.asObservable();
   continueChat$ = this.continueChatSource.asObservable();
@@ -60,6 +60,7 @@ export class GlobalService {
       case 'GET': request$ = this.http.get<GlobalResponse<T>>(`${this.apiBaseUrl}${url}`, options); break;
       case 'POST': request$ = this.http.post<GlobalResponse<T>>(`${this.apiBaseUrl}${url}`, body, options); break;
       case 'DELETE': request$ = this.http.delete<GlobalResponse<T>>(`${this.apiBaseUrl}${url}`, options); break;
+      case 'PUT': request$ = this.http.put<GlobalResponse<T>>(`${this.apiBaseUrl}${url}`, body, options); break;
       default: throw new Error(`Unsupported HTTP method: ${method}`);
     }
 
@@ -93,5 +94,14 @@ export class GlobalService {
   getConversationByUserName(username: string, skipLoader: boolean = false): Observable<any> {
     const params = new HttpParams().set('userName', username);
     return this.apiCall<any>(`/conversations`, 'GET', undefined, params, skipLoader);
+  }
+
+  renameChat(conversationId: number, newTitle: string, skipLoader: boolean = false): Observable<any> {
+    const url = `/conversations/rename?conversationId=${conversationId}&newTitle=${encodeURIComponent(newTitle)}`;
+    return this.apiCall<any>(url, 'PUT', undefined, undefined, skipLoader);
+  }
+
+  deleteChat(conversationId: number, skipLoader: boolean = false): Observable<any> {
+    return this.apiCall<any>(`/chats/delete/${conversationId}`, 'DELETE', undefined, undefined, skipLoader);
   }
 }
