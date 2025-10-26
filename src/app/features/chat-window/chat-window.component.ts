@@ -137,10 +137,11 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
   }
 
   scrollToBottom() {
+    // small delay to allow DOM updates (messages appended) before scrolling
     setTimeout(() => {
       const el = this.scrollEl?.nativeElement;
       if (el) el.scrollTop = el.scrollHeight;
-    }, 50);
+    }, 100);
   }
 
   ngAfterViewChecked() {

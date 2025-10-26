@@ -1,46 +1,51 @@
-<section class="chat-window">
-  <!-- Welcome message -->
-  <div *ngIf="messages.length === 0" class="welcome-message">
-    <h2 class="typing-effect">Hi {{ username }}</h2>
-    <p>Welcome to Nilachakra AI. Feel free to ask me anything!</p>
-  </div>
+<section class="chat-window" #scrollEl>
+  <!-- Centered inner wrapper so the overlay fills the viewport while chat stays centered -->
+  <div class="chat-inner">
+
+    <!-- Welcome message -->
+    <div *ngIf="messages.length === 0" class="welcome-message">
+      <h2 class="typing-effect">Hi {{ username }}</h2>
+      <p>Welcome to Nilachakra AI. Feel free to ask me anything!</p>
+    </div>
 
   <!-- Messages -->
-  <div class="messages" #scrollEl>
-    <div *ngFor="let m of messages" class="message" [ngClass]="m.role">
-      <div class="bubble">
-        <!-- Render everything with markdown -->
-        <markdown [data]="m.text"></markdown>
-        <span *ngIf="m.isTyping" class="typing-dots">
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
-        </span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Composer -->
-  <div class="composer">
-    <textarea pInputTextarea [(ngModel)]="userChatMsg" placeholder="Ask anything..." (keydown.enter)="onEnter($event)"
-      (input)="autoGrow($event)" rows="2" class="chat-textarea"></textarea>
-    <button pButton type="button" icon="pi pi-box" (click)="overlayPanel.toggle($event)" pTooltip="Select Model"
-      tooltipPosition="top" tooltipEvent="hover"></button>
-    <button pButton type="button" icon="pi pi-send" (click)="send()" [disabled]="!userChatMsg.trim() || isSendDisabled"></button>
-  </div>
-
-  <p-overlayPanel #overlayPanel [dismissable]="true" [style]="{'width':'320px'}">
-    <div class="panel-content">
-      <h3 class="panel-header">Select Model</h3>
-
-      <div class="panel-items">
-        <div class="panel-item" *ngFor="let model of models" [class.selected]="model.modelId === selectedModel.modelId"
-          (click)="selectModel(model)">
-          <span>{{ model.displayName }}</span>
-          <i class="pi pi-check" *ngIf="model.modelId === selectedModel.modelId"></i>
+  <div class="messages">
+      <div *ngFor="let m of messages" class="message" [ngClass]="m.role">
+        <div class="bubble">
+          <!-- Render everything with markdown -->
+          <markdown [data]="m.text"></markdown>
+          <span *ngIf="m.isTyping" class="typing-dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </span>
         </div>
       </div>
     </div>
-  </p-overlayPanel>
+
+    <!-- Composer -->
+    <div class="composer">
+      <textarea pInputTextarea [(ngModel)]="userChatMsg" placeholder="Ask anything..." (keydown.enter)="onEnter($event)"
+        (input)="autoGrow($event)" rows="2" class="chat-textarea"></textarea>
+      <button pButton type="button" icon="pi pi-box" (click)="overlayPanel.toggle($event)" pTooltip="Select Model"
+        tooltipPosition="top" tooltipEvent="hover"></button>
+      <button pButton type="button" icon="pi pi-send" (click)="send()" [disabled]="!userChatMsg.trim() || isSendDisabled"></button>
+    </div>
+
+    <p-overlayPanel #overlayPanel [dismissable]="true" [style]="{'width':'320px'}">
+      <div class="panel-content">
+        <h3 class="panel-header">Select Model</h3>
+
+        <div class="panel-items">
+          <div class="panel-item" *ngFor="let model of models" [class.selected]="model.modelId === selectedModel.modelId"
+            (click)="selectModel(model)">
+            <span>{{ model.displayName }}</span>
+            <i class="pi pi-check" *ngIf="model.modelId === selectedModel.modelId"></i>
+          </div>
+        </div>
+      </div>
+    </p-overlayPanel>
+
+  </div>
 
 </section>
