@@ -32,12 +32,12 @@ export class ChatSidebarComponent {
   chatHistory: any[] = [];
   historyDialog = false;
   selectedChatDetail: any = null;
-  hoveredChat: any = null;
+  // hoveredChat: any = null;
   searchText = '';
   editingChatId: number | null = null;
   openMenuId: number | null = null;
   conversationId: number | null = null;
-
+  hoverRow: number | null = null;
   constructor(private globalService: GlobalService, private host: ElementRef) { }
 
   ngAfterViewChecked() {
@@ -71,7 +71,6 @@ export class ChatSidebarComponent {
   }
 
   loadChatDetail(chat: any) {
-    this.hoveredChat = chat;
     this.conversationId = chat.conversationId;
     this.globalService.getChatByConversationId(chat.conversationId).subscribe({
       next: (res) => {
@@ -157,9 +156,8 @@ export class ChatSidebarComponent {
     });
   }
 
-  onRowHover(chat: any) {
-    this.hoveredChat = chat;
-    if (this.openMenuId && this.openMenuId !== chat.conversationId) {
+  closeMenu(chat: any) {
+    if (this.openMenuId === chat.conversationId) {
       this.openMenuId = null;
     }
   }
