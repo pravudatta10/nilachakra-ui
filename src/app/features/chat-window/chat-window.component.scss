@@ -264,7 +264,18 @@
 }
 
 /* Responsive */
-@media(max-width:768px) {
+@media (max-width: 1200px) {
+  .chat-window {
+    max-width: 100%;
+    height: calc(100vh - 80px);
+  }
+
+  .welcome-message h2 {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 768px) {
   .chat-window {
     height: calc(100vh - 56px);
     width: 100%;
@@ -272,6 +283,8 @@
 
   .bubble {
     max-width: 86%;
+    font-size: 12px;
+    padding: 6px 10px;
   }
 
   .composer {
@@ -279,6 +292,63 @@
     left: 50%;
     transform: translateX(-50%);
     bottom: 18px;
+    padding: 8px;
+  }
+
+  .welcome-message h2 {
+    font-size: 1.8rem;
+  }
+
+  .welcome-message p {
+    font-size: 1rem;
+  }
+
+  :host ::ng-deep pre {
+    width: 95%;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-window {
+    height: calc(100vh - 48px);
+  }
+
+  .bubble {
+    max-width: 82%;
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+
+  .composer {
+    width: calc(100% - 24px);
+    bottom: 12px;
+    padding: 6px;
+  }
+
+  .chat-textarea {
+    padding: 8px 10px;
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .welcome-message h2 {
+    font-size: 1.5rem;
+  }
+
+  .welcome-message p {
+    font-size: 0.9rem;
+  }
+
+  :host ::ng-deep pre {
+    width: 100%;
+    padding: 8px;
+    font-size: 10px;
+  }
+
+  .copy-btn {
+    padding: 1px 4px;
+    font-size: 10px;
   }
 }
 

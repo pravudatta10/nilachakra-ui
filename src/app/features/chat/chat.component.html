@@ -2,7 +2,12 @@
   <app-chat-sidebar></app-chat-sidebar>
 
   <div class="main">
-      <!-- <app-chat-topbar (toggleSidebar)="toggleMobileSidebar()" (selectedModelChange)="onModelSelected($event)"></app-chat-topbar> -->
+    <div class="mobile-header">
+      <button pButton type="button" class="p-button-text mobile-menu-btn" 
+        icon="pi pi-bars" (click)="toggleMobileSidebar(true)">
+      </button>
+      <img src="assets/images/logo.png" alt="nilachakra" class="mobile-logo" />
+    </div>
     <div class="center-stage">
       <app-chat-window></app-chat-window>
     </div>

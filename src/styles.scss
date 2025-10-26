@@ -78,9 +78,44 @@ textarea {
 .messages::-webkit-scrollbar { width: 10px; }
 .messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.03); border-radius: 10px; }
 
-/* Small responsive tweaks */
-@media (max-width: 420px) {
-	.composer { width: calc(100% - 32px) !important; left: 50% !important; transform: translateX(-50%) !important; }
+/* Responsive styles */
+@media (max-width: 1200px) {
+    .p-card, .p-panel {
+        width: 95% !important;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    html, body {
+        font-size: 14px;
+    }
+    
+    .p-button {
+        padding: 0.5rem 1rem !important;
+    }
+
+    .p-card, .p-panel {
+        padding: 1rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    html, body {
+        font-size: 13px;
+    }
+
+    .composer { 
+        width: calc(100% - 32px) !important; 
+        left: 50% !important; 
+        transform: translateX(-50%) !important;
+        padding: 8px !important;
+    }
+
+    .p-dialog {
+        width: 90vw !important;
+        max-height: 90vh !important;
+    }
 }
 
 /* You can add more overrides below for other PrimeNG elements if needed */

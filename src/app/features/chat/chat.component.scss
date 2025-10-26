@@ -92,13 +92,21 @@ $nilachakra-blue-end: #073a6a;
 .center-stage { padding-bottom: 160px; }
 
 .mobile-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: rgba(0,0,0,0.5);
-	z-index: 50;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.chat-page.mobile-open .mobile-overlay {
+    display: block;
+    opacity: 1;
 }
 
 .topbar {
@@ -179,16 +187,124 @@ $nilachakra-blue-end: #073a6a;
 	color:#eaf6ff;
 }
 
-/* Responsive rules */
-@media (max-width: 768px) {
-	.sidebar { width: 56px; }
-	.hero-card { width: 95%; padding: 18px; }
-	.hero-logo { font-size: 28px; }
-	.topbar { padding: 8px 12px; }
+.mobile-header {
+    display: none;
+    align-items: center;
+    padding: 8px 16px;
+    background: var(--nilachakra-surface);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-@media (max-width: 420px) {
-	.sidebar { display:none; }
-	.hero-card { width: 100%; margin: 0 6px; }
-	.topbar-right .p-button { display:none; }
+.mobile-menu-btn {
+    color: var(--nilachakra-text) !important;
+    padding: 8px !important;
+}
+
+.mobile-logo {
+    height: 32px;
+    margin-left: 8px;
+}
+
+/* Responsive rules */
+@media (max-width: 1200px) {
+    .center-stage > app-chat-window { 
+        width: 90%; 
+        max-width: 900px; 
+    }
+    
+    .main {
+        margin-left: $sidebar-width;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar { 
+        width: 56px; 
+        position: fixed;
+        height: 100vh;
+        z-index: 1000;
+    }
+    
+    .main {
+        margin-left: 56px;
+    }
+    
+    .hero-card { 
+        width: 95%; 
+        padding: 18px; 
+    }
+    
+    .hero-logo { 
+        font-size: 28px; 
+    }
+    
+    .topbar { 
+        padding: 8px 12px; 
+    }
+    
+    .hero-input-wrap {
+        flex-direction: column;
+    }
+    
+    .hero-input-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-header {
+        display: flex;
+        position: sticky;
+        top: 0;
+        z-index: 998;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .main {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .hero-card { 
+        width: 100%; 
+        margin: 0 6px;
+        padding: 12px;
+    }
+    
+    .topbar-right .p-button { 
+        display: none; 
+    }
+    
+    .center-stage {
+        padding: 12px;
+        padding-bottom: 120px;
+    }
+
+    .mobile-overlay {
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+    }
+
+    /* Prevent scrolling when sidebar is open */
+    .chat-page.mobile-open {
+        height: 100vh;
+        overflow: hidden;
+    }
+}
+
+/* Dark overlay for mobile sidebar */
+.mobile-overlay {
+    display: none;
+}
+
+.chat-page.mobile-open .mobile-overlay {
+    display: block;
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
 }
