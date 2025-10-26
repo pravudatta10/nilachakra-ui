@@ -93,8 +93,9 @@ html, body {
 }
 
 .message.user .bubble {
-  background: linear-gradient(180deg, var(--color-primary-start), var(--color-primary-end));
-  color: var(--color-text);
+  background: var(--color-primary-start);
+  color: var(--color-text); 
+  max-width: calc(100% - 100px);
 }
 
 .message.ai .bubble {
@@ -146,4 +147,23 @@ html, body {
 /* ================== TRANSITIONS ================== */
 * {
   transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+/* ================== SIMPLE GLOBAL TOOLTIP ON TOP ================== */
+.p-tooltip { 
+  color: #fff !important;   
+  font-size: 0.75rem !important;
+  padding: 3px 6px !important;
+  border-radius: 4px !important;
+  max-width: 200px !important;
+  text-align: center;
+  z-index: 9999 !important;
+
+  /* Position top by default */
+  transform-origin: bottom center !important;
+}
+
+/* Arrow color same as background */
+.p-tooltip:after {
+  border-top-color: #333 !important;
 }

@@ -36,6 +36,7 @@ export class ChatSidebarComponent {
   searchText = '';
   editingChatId: number | null = null;
   openMenuId: number | null = null;
+  conversationId: number | null = null;
 
   constructor(private globalService: GlobalService, private host: ElementRef) { }
 
@@ -71,6 +72,7 @@ export class ChatSidebarComponent {
 
   loadChatDetail(chat: any) {
     this.hoveredChat = chat;
+    this.conversationId = chat.conversationId;
     this.globalService.getChatByConversationId(chat.conversationId).subscribe({
       next: (res) => {
         this.selectedChatDetail = res;
@@ -88,8 +90,8 @@ export class ChatSidebarComponent {
   }
 
   continueChat() {
-    if (this.hoveredChat) {
-      this.globalService.continueChat(this.hoveredChat.conversationId);
+    if (this.conversationId && this.selectedChatDetail) {
+      this.globalService.continueChat(this.conversationId);
       this.historyDialog = false;
     }
   }

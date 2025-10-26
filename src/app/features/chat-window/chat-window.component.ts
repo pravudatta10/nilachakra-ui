@@ -72,7 +72,7 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
           history.forEach((msg) => {
             const msgIndex = this.messages.length;
             this.messages.push({ id: msgIndex, role: 'user', text: msg.query });
-            this.messages.push({ id: msgIndex + 1, role: 'assistant', text: msg.answer, modelName: msg.modelName });
+            this.messages.push({ id: msgIndex + 1, role: 'assistant', text: msg.answer, modelName: msg.modelName, userQuery: msg.query, showThreeDots: false });
             this.selectedModel = this.models.find(m => m.modelName === msg.modelName) || this.models[0];
             this.scrollToBottom();
           });
@@ -89,10 +89,11 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
     this.messages.push({ id: this.messages.length, role: 'user', text });
     this.userChatMsg = '';
     this.scrollToBottom();
+    console.log(this.messages);
 
     // Add assistant typing message
     const msgIndex = this.messages.length;
-    const assistantMsg: Message = { id: msgIndex, role: 'assistant', text: '', isTyping: true, modelName: this.selectedModel.displayName };
+    const assistantMsg: Message = { id: msgIndex, role: 'assistant', text: '', isTyping: true, modelName: this.selectedModel.displayName, userQuery: text, showThreeDots: true };
     this.messages.push(assistantMsg);
     this.scrollToBottom();
 
@@ -118,7 +119,7 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
   private handleAIResponse(res: ChatResponse, assistantMsg: Message) {
     const fullText = res.answer;
     this.conversationId = res.conversationId;
-    assistantMsg.isTyping = false;
+    assistantMsg.showThreeDots = false;
     this.isSendDisabled = true;
     let i = 0;
     const speed = 15; // typing animation speed
@@ -184,6 +185,11 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
   dislikeMessage(msg: Message) {
     console.log('Disliked message:', msg);
     // You can send this info to server if needed
+  }
+  regenerateMessage(msg: Message) {
+    if (!msg.text) return;
+    this.userChatMsg = msg.userQuery || '';
+    this.send();
   }
 
 }

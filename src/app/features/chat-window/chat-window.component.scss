@@ -111,6 +111,21 @@
   color: #555;
 }
 
+.regen-btn {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .8rem;
+  color: #555;
+  transition: color 0.2s;
+}
+
+.regen-btn:hover {
+  color: #00bcd4;
+}
+
+
 /* ================== CODE BLOCKS ================== */
 :host ::ng-deep pre {
   position: relative;

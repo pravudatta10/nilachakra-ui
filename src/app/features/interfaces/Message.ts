@@ -4,4 +4,6 @@ export interface Message {
   text: string;
   isTyping?: boolean;
   modelName?: string;
+  userQuery?: string;
+  showThreeDots?: boolean;
 }
