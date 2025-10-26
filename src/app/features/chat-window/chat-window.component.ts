@@ -75,7 +75,7 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
             this.selectedModel = this.models.find(m => m.modelName === msg.modelName) || this.models[0];
             this.scrollToBottom();
           });
-        });        
+        });
       }
     });
   }
@@ -124,8 +124,7 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
     const interval = setInterval(() => {
       if (i < fullText.length) {
         assistantMsg.text += fullText.charAt(i);
-        i++;        
-        console.log("printing");        
+        i++;
         this.scrollToBottom();
       } else {
         clearInterval(interval);
@@ -137,7 +136,6 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
   }
 
   scrollToBottom() {
-    // small delay to allow DOM updates (messages appended) before scrolling
     setTimeout(() => {
       const el = this.scrollEl?.nativeElement;
       if (el) el.scrollTop = el.scrollHeight;
@@ -146,7 +144,12 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked() {
     const codeBlocks = this.scrollEl?.nativeElement.querySelectorAll('pre code');
-    codeBlocks?.forEach(block => hljs.highlightElement(block as HTMLElement));
+    codeBlocks?.forEach(block => {
+      const el = block as HTMLElement;
+      if (!el.dataset['highlighted']) {
+        hljs.highlightElement(el);
+      }
+    });
   }
 
   autoGrow(event: Event) {
