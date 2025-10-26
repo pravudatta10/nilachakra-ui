@@ -71,8 +71,44 @@
 }
 
 .message.assistant .bubble {
-  background: transparent; /* assistant bubble transparent */
-  color: var(--color-text);
+  background: transparent;
+  color: var(--color-text); 
+  padding-bottom: 28px;
+}
+
+/* Floating footer */
+.message-footer-float {
+  position: absolute;
+  bottom: 4px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #888;
+}
+
+/* Like / Dislike icons */
+.like-dislike {
+  display: flex;
+  gap: 4px;
+}
+
+.like-dislike i {
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.like-dislike i:hover {
+  color: #00bcd4; /* highlight color on hover */
+}
+
+/* Model name text */
+.model-name {
+  font-style: italic;
+  color: #555;
 }
 
 /* ================== CODE BLOCKS ================== */

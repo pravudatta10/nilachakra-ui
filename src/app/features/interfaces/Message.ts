@@ -3,4 +3,5 @@ export interface Message {
   role: 'user' | 'assistant';
   text: string;
   isTyping?: boolean;
+  modelName?: string;
 }

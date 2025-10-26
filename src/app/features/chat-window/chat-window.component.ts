@@ -67,11 +67,12 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
     this.globalService.continueChat$.subscribe(conversationId => {
       if (conversationId !== 0) {
         this.conversationId = conversationId;
+        this.messages = [];
         this.globalService.getChatByConversationId(conversationId).subscribe((history) => {
           history.forEach((msg) => {
             const msgIndex = this.messages.length;
             this.messages.push({ id: msgIndex, role: 'user', text: msg.query });
-            this.messages.push({ id: msgIndex + 1, role: 'assistant', text: msg.answer });
+            this.messages.push({ id: msgIndex + 1, role: 'assistant', text: msg.answer, modelName: msg.modelName });
             this.selectedModel = this.models.find(m => m.modelName === msg.modelName) || this.models[0];
             this.scrollToBottom();
           });
@@ -91,7 +92,7 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
 
     // Add assistant typing message
     const msgIndex = this.messages.length;
-    const assistantMsg: Message = { id: msgIndex, role: 'assistant', text: '', isTyping: true };
+    const assistantMsg: Message = { id: msgIndex, role: 'assistant', text: '', isTyping: true, modelName: this.selectedModel.displayName };
     this.messages.push(assistantMsg);
     this.scrollToBottom();
 
@@ -174,4 +175,15 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
   togglePanel(event: Event) {
     this.overlayPanel.toggle(event);
   }
+
+  likeMessage(msg: Message) {
+    console.log('Liked message:', msg);
+    // You can send this info to server if needed
+  }
+
+  dislikeMessage(msg: Message) {
+    console.log('Disliked message:', msg);
+    // You can send this info to server if needed
+  }
+
 }
