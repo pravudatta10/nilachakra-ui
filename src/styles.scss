@@ -1,128 +1,149 @@
+/* ================== GLOBAL IMPORTS ================== */
 @import 'primeng/resources/themes/lara-dark-indigo/theme.css';
 @import 'primeng/resources/primeng.min.css';
 @import 'primeicons/primeicons.css';
-@import 'highlight.js/styles/github-dark.css'; // or any theme
+@import 'highlight.js/styles/github-dark.css'; /* Code blocks */
 
-/* Nilachakra theme variables */
+/* ================== FONT ================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 :root {
-	--nilachakra-bg: #0f1116; /* very dark */
-	--nilachakra-surface: #121827; /* card background */
-	--nilachakra-blue-start: #0b4b86;
-	--nilachakra-blue-end: #073a6a;
-	--nilachakra-muted: #9aa0a6;
-	--nilachakra-text: #e6eefb;
-	--nilachakra-card-shadow: 0 10px 30px rgba(3,10,24,0.6);
+  /* ===== COLORS ===== */
+  --color-bg: #212121;          /* Page background */
+  --color-surface: #1a1a1a;     /* Cards, panels, dialogs */
+  --color-text: #e6e6e6;        /* Main text */
+  --color-muted: #9a9a9a;       /* Subtle text */
+  --color-primary-start: #2a2a2a; /* Button / primary start */
+  --color-primary-end: #111111;   /* Button / primary end */
+  --color-accent-start: #3a3a3a;  /* Hover / focus accent start */
+  --color-accent-end: #1a1a1a;    /* Hover / focus accent end */
+  --color-error: #f87171;
+  --color-success: #4ade80;
+
+  /* ===== SHADOWS ===== */
+  --card-shadow: 0 10px 30px rgba(0,0,0,0.6);
+
+  /* ===== FONTS ===== */
+  --font-family-base: 'Inter', sans-serif;
+  --transition: 0.3s ease;
 }
 
+/* ================== GLOBAL RESET ================== */
 html, body {
-	height: 100%;
-	background: var(--nilachakra-bg);
-	color: var(--nilachakra-text);
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family-base);
+  background: var(--color-bg);
+  color: var(--color-text);
+  overflow: hidden; /* Scrolls inside components */
+  transition: background var(--transition), color var(--transition);
 }
 
-/* Prevent page-level scrolling; chat content will scroll internally */
-html, body { overflow: hidden; }
-
-/* PrimeNG common overrides to match Nilachakra theme */
-.p-card, .p-panel, .p-dialog .p-dialog-content {
-	background: var(--nilachakra-surface) !important;
-	color: var(--nilachakra-text) !important;
-	box-shadow: var(--nilachakra-card-shadow) !important;
-	border-radius: 10px !important;
+*, *::before, *::after {
+  box-sizing: border-box;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
 }
 
-.p-button,
-.p-button.p-button-text {
-	color: var(--nilachakra-text) !important;
+/* ================== PRIMENG OVERRIDES ================== */
+.p-card, .p-panel, .p-dialog .p-dialog-content,.p-dialog .p-dialog-header {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  box-shadow: var(--card-shadow) !important;
+//   border-radius: 10px !important;
+}
+
+.p-button, .p-button.p-button-text {
+  color: var(--color-text) !important;
 }
 
 .p-button:not(.p-button-text) {
-	background: linear-gradient(180deg,var(--nilachakra-blue-start),var(--nilachakra-blue-end)) !important;
-	border: none !important;
-	box-shadow: 0 6px 18px rgba(11,75,134,0.18) !important;
+  background: linear-gradient(180deg, var(--color-primary-start), var(--color-primary-end)) !important;
+  border: none !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.5) !important;
 }
 
-.p-inputtext,
-.p-dropdown .p-dropdown-label,
-.p-inputtextarea,
-textarea {
-	background: rgba(255,255,255,0.02) !important;
-	color: var(--nilachakra-text) !important;
-	border: 1px solid rgba(255,255,255,0.04) !important;
+.p-inputtext, .p-dropdown .p-dropdown-label, .p-inputtextarea, textarea {
+  background: rgba(255,255,255,0.02) !important;
+  color: var(--color-text) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 6px;
 }
 
-/* Dropdown menu / small menus */
-.model-menu,
-.p-dropdown-items,
-.p-overlaypanel {
-	background: var(--nilachakra-surface) !important;
-	color: var(--nilachakra-text) !important;
-	border: 1px solid rgba(255,255,255,0.04) !important;
+.model-menu, .p-dropdown-items, .p-overlaypanel {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
 }
 
-/* Make p-avatar fall back to initials style consistent */
+/* ================== AVATAR / BUBBLES ================== */
 .p-avatar {
-	background: linear-gradient(180deg,var(--nilachakra-blue-start),var(--nilachakra-blue-end)) !important;
-	color: #eaf6ff !important;
-	border-radius: 50% !important;
+  background: linear-gradient(180deg, var(--color-primary-start), var(--color-primary-end)) !important;
+  color: var(--color-text) !important;
+  border-radius: 50% !important;
 }
 
-/* Chat bubble defaults */
-.bubble { background: rgba(255,255,255,0.03); color: var(--nilachakra-text); }
-.message.user .bubble { background: linear-gradient(180deg,var(--nilachakra-blue-start),var(--nilachakra-blue-end)); color: #eaf6ff; }
+.bubble {
+  background: rgba(255,255,255,0.03);
+  color: var(--color-text);
+  border-radius: 12px;
+  padding: 12px;
+  max-width: 100%;
+  white-space: pre-wrap;
+}
 
-/* Floating composer style override (in case PrimeNG buttons inside) */
-.composer { background: rgba(15,17,22,0.95) !important; }
+.message.user .bubble {
+  background: linear-gradient(180deg, var(--color-primary-start), var(--color-primary-end));
+  color: var(--color-text);
+}
 
-/* Ensure consistent scrollbar look on messages */
+.message.ai .bubble {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+/* ================== SCROLLBARS ================== */
 .messages::-webkit-scrollbar { width: 10px; }
-.messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.03); border-radius: 10px; }
-
-/* Responsive styles */
-@media (max-width: 1200px) {
-    .p-card, .p-panel {
-        width: 95% !important;
-        margin: 0 auto;
-    }
+.messages::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
 }
 
-@media (max-width: 768px) {
-    html, body {
-        font-size: 14px;
-    }
-    
-    .p-button {
-        padding: 0.5rem 1rem !important;
-    }
+/* ================== COMPONENT SPECIFIC ================== */
+/* Login, sidebar, tables, dialogs will inherit colors via CSS variables */
 
-    .p-card, .p-panel {
-        padding: 1rem !important;
-    }
-}
-
-@media (max-width: 480px) {
-    html, body {
-        font-size: 13px;
-    }
-
-    .composer { 
-        width: calc(100% - 32px) !important; 
-        left: 50% !important; 
-        transform: translateX(-50%) !important;
-        padding: 8px !important;
-    }
-
-    .p-dialog {
-        width: 90vw !important;
-        max-height: 90vh !important;
-    }
-}
-
-/* You can add more overrides below for other PrimeNG elements if needed */
-.p-datatable tbody tr {
+/* Tables */
+.p-datatable tbody tr:hover {
+  background-color: rgba(255,255,255,0.05);
   cursor: pointer;
 }
 
-.p-datatable tbody tr:hover {
-  background-color: rgba(0, 150, 136, 0.15);
+/* ================== RESPONSIVE ================== */
+@media (max-width: 1200px) {
+  .p-card, .p-panel {
+    width: 95% !important;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  html, body { font-size: 14px; }
+  .p-button { padding: 0.5rem 1rem !important; }
+  .p-card, .p-panel { padding: 1rem !important; }
+}
+
+@media (max-width: 480px) {
+  html, body { font-size: 13px; }
+  .composer {
+    width: calc(100% - 32px) !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    padding: 8px !important;
+  }
+  .p-dialog { width: 90vw !important; max-height: 90vh !important; }
+}
+
+/* ================== TRANSITIONS ================== */
+* {
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
 }

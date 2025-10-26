@@ -37,8 +37,7 @@
           <p-table [value]="filteredChatHistory()" [scrollable]="true" scrollHeight="450px" class="chat-table"
             (mouseleave)="openMenuId = null">
             <ng-template pTemplate="body" let-chat>
-              <tr (mouseenter)="onRowHover(chat)" (mouseleave)="hoveredChat = null"
-                [class.hovered]="hoveredChat === chat">
+              <tr (mouseenter)="onRowHover(chat)" [class.hovered]="hoveredChat === chat">
 
                 <!-- title cell: inline editing -->
                 <td class="chat-title-cell" (click)="loadChatDetail(chat)">
@@ -51,7 +50,7 @@
                 <!-- menu column -->
                 <td class="menu-cell" (click)="$event.stopPropagation()">
                   <button pButton type="button" icon="pi pi-ellipsis-v" class="menu-btn p-button-text p-button-rounded"
-                    *ngIf="hoveredChat === chat" (click)="toggleMenu(chat, $event)">
+                    *ngIf="hoveredChat === chat " (click)="toggleMenu(chat, $event)">
                   </button>
 
                   <!-- small custom menu -->

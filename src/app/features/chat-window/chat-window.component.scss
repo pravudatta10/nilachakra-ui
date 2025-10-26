@@ -1,43 +1,41 @@
+/* ================== CHAT WINDOW ================== */
 .chat-window {
-  /* Full-screen overlay so the scrollbar appears at the right edge of the viewport */
   position: fixed;
   inset: 0;
   display: flex;
-  justify-content: center; /* center the .chat-inner horizontally */
-  align-items: flex-start; /* start from top so we can show some top padding */
+  justify-content: center;
+  align-items: flex-start;
   padding: 48px 20px;
   width: 100%;
   max-height: 82%;
-  overflow-y: auto; /* page-level scrollbar on the right side */
+  overflow-y: auto;
   z-index: 999;
   box-sizing: border-box;
+  background: var(--color-bg);
+  color: var(--color-text);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.06) transparent;
 }
 
 .chat-inner {
-  /* Centered chat container similar to ChatGPT layout */
   width: 100%;
   max-width: 760px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-sizing: border-box;
-  position: relative; /* so absolute welcome message is positioned inside */
-  /* constrain height so children with overflow can scroll properly */
+  position: relative;
   max-height: calc(100vh - 96px);
-  /* allow the inner container to expand but leave space for padding */
-  /* ensure last message isn't hidden behind the fixed composer */
   padding-bottom: 240px;
 }
 
 .messages {
   flex: 1 1 auto;
-  /* disable internal scrolling so the outer overlay (.chat-window) provides the scrollbar */
   overflow: visible;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding-bottom: 24px; /* keep some breathing room above composer */
-  min-height: 0; /* allow flex child to shrink and enable scrolling */
+  padding-bottom: 24px;
+  min-height: 0;
 }
 
 .message {
@@ -54,32 +52,64 @@
   justify-content: flex-start;
 }
 
+/* ================== BUBBLES ================== */
 .bubble {
   max-width: 100%;
-  // min-width: 50%;
   padding: 8px 12px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.03);
-  color: #eaf6ff;
+  color: var(--color-text);
   display: inline-flex;
   align-items: center;
-  /* center vertically */
   gap: 6px;
-  /* space between text and typing dots */
   font-size: 13px;
   flex-wrap: wrap;
 }
 
 .message.user .bubble {
-  background: rgba(255, 255, 255, 0.03);
-  color: #eaf6ff;
+  background: var(--color-primary-start);
+  color: var(--color-text); 
 }
 
 .message.assistant .bubble {
-  // background: rgba(216, 23, 23, 0.04);
-  color: #e6e6e6;
+  background: transparent; /* assistant bubble transparent */
+  color: var(--color-text);
 }
 
+/* ================== CODE BLOCKS ================== */
+:host ::ng-deep pre {
+  position: relative;
+  background: black !important;
+  color: var(--color-text) !important;
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto; 
+  box-sizing: border-box;
+  font-family: 'Fira Code', 'JetBrains Mono', 'Source Code Pro', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+:host ::ng-deep pre code {
+  background: none !important;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  width: 100%;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+:host ::ng-deep pre::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+:host ::ng-deep pre::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.08);
+  border-radius: 6px;
+} 
+
+/* Typing dots */
 .typing-dots {
   display: flex;
   gap: 3px;
@@ -93,158 +123,55 @@
   animation: bounce 1.4s infinite ease-in-out both;
 }
 
-.typing-dots .dot:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.typing-dots .dot:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.typing-dots .dot:nth-child(3) {
-  animation-delay: 0.4s;
-}
+.typing-dots .dot:nth-child(1) { animation-delay: 0s; }
+.typing-dots .dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots .dot:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes bounce {
-
-  0%,
-  80%,
-  100% {
-    transform: scale(0);
-    opacity: 0.3;
-  }
-
-  40% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+  40% { transform: scale(1); opacity: 1; }
 }
 
+/* ================== COMPOSER ================== */
 .composer {
   display: flex;
   gap: 8px;
   padding: 12px;
   border-radius: 999px;
   align-items: center;
-  position: fixed; /* restore fixed positioning at viewport bottom */
+  position: fixed;
   left: 50%;
   transform: translateX(-50%);
   bottom: 26px;
   width: min(900px, 86%);
   max-width: 760px;
-  background: linear-gradient(180deg, #0b4b86, #073a6a, #072d4a);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-  z-index: 1600; /* keep it above other UI elements */
+  background: linear-gradient(180deg, var(--color-primary-start), var(--color-primary-end));
+  box-shadow: var(--card-shadow);
+  z-index: 1600;
 }
 
 .chat-textarea {
   flex: 1;
   padding: 12px 14px;
   border-radius: 18px;
-  background: #40414f;
-  border: 1px solid #565869;
-  color: #e6e6e6;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--color-text);
   font-size: 14px;
   line-height: 18px;
   max-height: 72px;
   overflow-y: auto;
   resize: none;
   box-sizing: border-box;
-  scrollbar-gutter: stable;
 }
 
 .chat-textarea:focus {
   outline: none;
-  border: 1px solid #8e8ea0;
+  border-color: var(--color-accent-start);
+  box-shadow: 0 0 6px rgba(255,255,255,0.1);
 }
 
-/* Scrollbars */
-.chat-textarea::-webkit-scrollbar {
-  width: 6px;
-}
-
-.chat-textarea::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.chat-textarea::-webkit-scrollbar-thumb {
-  background: #6b6b6b;
-  border-radius: 10px;
-}
-
-.chat-textarea::-webkit-scrollbar-thumb:hover {
-  background: #8e8ea0;
-}
-
-.chat-textarea {
-  scrollbar-width: thin;
-  scrollbar-color: #6b6b6b transparent;
-}
-
-/* Professional scrollbar styling for viewport (overlay) */
-.chat-window::-webkit-scrollbar {
-  width: 12px;
-}
-
-.chat-window::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.chat-window::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
-  border: 3px solid transparent;
-  background-clip: padding-box;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
-}
-
-.chat-window::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-/* Scrollbar for messages pane (thinner) */
-.messages::-webkit-scrollbar {
-  width: 8px;
-}
-
-.messages::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.messages::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.06);
-  border-radius: 8px;
-}
-
-.messages::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.12);
-}
-
-/* Firefox support */
-.chat-window {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.06) transparent;
-}
-
-.messages {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.06) transparent;
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Welcome message */
+/* ================== WELCOME MESSAGE ================== */
 .welcome-message {
   position: absolute;
   inset: 0;
@@ -255,10 +182,10 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+  color: var(--color-text);
 }
 
 .welcome-message h2 {
-  color: #fff;
   font-weight: 700;
   font-size: 2.8rem;
   margin-bottom: 16px;
@@ -267,48 +194,46 @@
   border-right: 0.15em solid #00bcd4;
   width: 14ch;
   animation: typing 3s steps(14), blink-caret 0.75s step-end infinite;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7), 2px 2px 4px rgba(0, 0, 0, 0.6);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
 }
 
 .welcome-message p {
-  color: #ccc;
   font-size: 1.2rem;
   margin-top: 8px;
+  color: var(--color-muted);
 }
 
 @keyframes typing {
-  from {
-    width: 0
-  }
-
-  to {
-    width: 14ch
-  }
+  from { width: 0; }
+  to { width: 14ch; }
 }
 
 @keyframes blink-caret {
-  50% {
-    border-color: transparent
-  }
-
-  100% {
-    border-color: #00bcd4
-  }
+  50% { border-color: transparent; }
+  100% { border-color: #00bcd4; }
 }
 
-/* Overlay Panel */
+/* ================== OVERLAY PANEL ================== */
+.p-overlaypanel {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--card-shadow) !important;
+}
+
 .panel-content {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  color: #fff;
-  border-radius: 12px;
+  color: var(--color-text);
+  padding: 12px;
 }
 
 .panel-header {
   margin: 0;
   font-weight: bold;
-  border-bottom: 1px solid #444;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
   padding-bottom: 6px;
 }
 
@@ -331,139 +256,38 @@
   transition: background 0.2s;
 }
 
-.panel-item:hover {
+.panel-item:hover,
+.panel-item.selected {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.panel-item.selected {
-  background-color: rgba(0, 123, 255, 0.3);
+/* ================== SCROLLBARS ================== */
+.messages::-webkit-scrollbar { width: 10px; }
+.messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
+
+.chat-window::-webkit-scrollbar { width: 12px; }
+.chat-window::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 10px; }
+
+/* ================== ANIMATIONS ================== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
-  .chat-window {
-    max-width: 100%;
-    max-height: 82%;
-  }
-
-  .welcome-message h2 {
-    font-size: 2.2rem;
-  }
-}
-
+/* ================== RESPONSIVE ================== */
 @media (max-width: 768px) {
-  .chat-window {
-    max-height: 82%;
-    width: 100%;
-  }
-
-  .bubble {
-    max-width: 86%;
-    font-size: 12px;
-    padding: 6px 10px;
-  }
-
-  .composer {
-    width: calc(100% - 48px);
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 18px;
-    padding: 8px;
-  }
-
-  .welcome-message h2 {
-    font-size: 1.8rem;
-  }
-
-  .welcome-message p {
-    font-size: 1rem;
-  }
-
-  :host ::ng-deep pre {
-    width: 95%;
-    font-size: 11px;
-  }
+  .chat-window { max-height: 82%; }
+  .bubble { max-width: 86%; font-size: 12px; padding: 6px 10px; }
+  .composer { width: calc(100% - 48px); bottom: 18px; padding: 8px; }
+  .chat-textarea { padding: 8px 10px; font-size: 12px; line-height: 16px; }
+  .welcome-message h2 { font-size: 2.2rem; }
+  .welcome-message p { font-size: 1rem; }
 }
 
 @media (max-width: 480px) {
-  .chat-window {
-    max-height: 82%;
-  }
-
-  .bubble {
-    max-width: 82%;
-    font-size: 11px;
-    padding: 6px 8px;
-  }
-
-  .composer {
-    width: calc(100% - 24px);
-    bottom: 12px;
-    padding: 6px;
-  }
-
-  .chat-textarea {
-    padding: 8px 10px;
-    font-size: 12px;
-    line-height: 16px;
-  }
-
-  .welcome-message h2 {
-    font-size: 1.5rem;
-  }
-
-  .welcome-message p {
-    font-size: 0.9rem;
-  }
-
-  :host ::ng-deep pre {
-    width: 100%;
-    padding: 8px;
-    font-size: 10px;
-  }
-
-  .copy-btn {
-    padding: 1px 4px;
-    font-size: 10px;
-  }
-}
-
-/* Code blocks */
-:host ::ng-deep pre {
-  position: relative;
-  background: #1e1e1e !important;
-  color: #fff !important;
-  padding: 12px;
-  border-radius: 8px;
-  overflow-x: auto;
-  width: 90%;
-  box-sizing: border-box;
-}
-
-:host ::ng-deep pre code {
-  background: none !important;
-  color: inherit;
-  font-family: 'Fira Code', monospace;
-  font-size: 12px;
-  line-height: 1.5;
-  width: 100%;
-}
-
-/* Copy button */
-.copy-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 10;
-  font-size: 12px;
-  padding: 2px 6px;
-  background: #00bcd4;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.copy-btn:hover {
-  background: #00a2c7;
+  .bubble { max-width: 82%; font-size: 11px; padding: 6px 8px; }
+  .composer { width: calc(100% - 24px); bottom: 12px; padding: 6px; }
+  .chat-textarea { font-size: 11px; }
+  .welcome-message h2 { font-size: 1.5rem; }
+  .welcome-message p { font-size: 0.9rem; }
 }
