@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatSidebarComponent } from '../sidebar/sidebar.component';
-import { ChatTopbarComponent } from '../topbar/topbar.component';
 import { ChatWindowComponent } from '../chat-window/chat-window.component';
 
 @Component({
