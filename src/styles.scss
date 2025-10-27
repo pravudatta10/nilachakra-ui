@@ -167,3 +167,19 @@ html, body {
 .p-tooltip:after {
   border-top-color: #333 !important;
 }
+
+/* ================== CLICKABLE ICON HOVER ================== */
+
+.pi {
+  color: var(--color-text);
+  transition: color 0.3s ease;
+}
+
+/* Hover color only for clickable icons */
+button .pi:hover,
+a .pi:hover,
+.pi[role="button"]:hover,
+.pi.clickable:hover,
+[style*="cursor: pointer"] .pi:hover {
+  color: #00bcd4 !important;
+}

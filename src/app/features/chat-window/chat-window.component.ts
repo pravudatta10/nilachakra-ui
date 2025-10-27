@@ -75,8 +75,8 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
             this.messages.push({ id: msgIndex, role: 'user', text: msg.query });
             this.messages.push({ id: msgIndex + 1, role: 'assistant', text: msg.answer, modelName: msg.modelName, userQuery: msg.query, showThreeDots: false });
             this.selectedModel = this.models.find(m => m.modelName === msg.modelName) || this.models[0];
-            this.scrollToBottom();
           });
+          setTimeout(() => this.scrollToBottom(), 100);
         });
       }
     });
