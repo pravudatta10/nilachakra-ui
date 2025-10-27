@@ -1,20 +1,20 @@
-import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import hljs from 'highlight.js';
+import { MarkdownModule } from 'ngx-markdown';
+import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
-import { ButtonModule } from 'primeng/button';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
 import { TooltipModule } from 'primeng/tooltip';
-import { MarkdownModule } from 'ngx-markdown';
-import hljs from 'highlight.js';
 
-import { GlobalService } from '../services/global.service';
 import { ChatRequest } from '../interfaces/chat-request';
 import { ChatResponse } from '../interfaces/chat-response';
-import { ModelDetails } from '../interfaces/ModelDetails';
 import { Message } from '../interfaces/Message';
+import { ModelDetails } from '../interfaces/ModelDetails';
+import { GlobalService } from '../services/global.service';
 @Component({
   selector: 'app-chat-window',
   standalone: true,
@@ -34,6 +34,7 @@ import { Message } from '../interfaces/Message';
 })
 export class ChatWindowComponent implements OnInit, AfterViewChecked {
 
+
   @ViewChild('overlayPanel') overlayPanel!: OverlayPanel;
   @ViewChild('scrollEl', { static: false }) scrollEl!: ElementRef<HTMLElement>;
 
@@ -45,7 +46,7 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
   queryPayload!: ChatRequest;
   conversationId: number | null = null;
   isSendDisabled = false;
-
+  autoScroll = true;
   constructor(private globalService: GlobalService) { }
 
   ngOnInit() {
@@ -89,7 +90,6 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
     this.messages.push({ id: this.messages.length, role: 'user', text });
     this.userChatMsg = '';
     this.scrollToBottom();
-    console.log(this.messages);
 
     // Add assistant typing message
     const msgIndex = this.messages.length;
@@ -116,32 +116,44 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
       }
     });
   }
-  private handleAIResponse(res: ChatResponse, assistantMsg: Message) {
-    const fullText = res.answer;
-    this.conversationId = res.conversationId;
-    assistantMsg.showThreeDots = false;
+  private handleAIResponse(response: ChatResponse, assistantMessage: Message): void {
+    const answerText = response.answer;
+    this.conversationId = response.conversationId;
+
+    assistantMessage.showThreeDots = false;
+    assistantMessage.isTyping = true;
     this.isSendDisabled = true;
-    let i = 0;
-    const speed = 15; // typing animation speed
-    const interval = setInterval(() => {
-      if (i < fullText.length) {
-        assistantMsg.text += fullText.charAt(i);
-        i++;
-        this.scrollToBottom();
+
+    let charIndex = 0;
+    const typingSpeed = 15; // milliseconds per character
+
+    const typingInterval = setInterval(() => {
+      if (charIndex < answerText.length) {
+        assistantMessage.text += answerText.charAt(charIndex);
+        charIndex++;
+
+        // Scroll every few characters to prevent flickering
+        if (charIndex % 2 === 0) {
+          this.scrollToBottom();
+        }
       } else {
-        clearInterval(interval);
-        assistantMsg.isTyping = false;
+        clearInterval(typingInterval);
+        assistantMessage.isTyping = false;
         this.isSendDisabled = false;
         this.scrollToBottom();
       }
-    }, speed);
+    }, typingSpeed);
   }
 
-  scrollToBottom() {
+  scrollToBottom(): void {
+    if (!this.autoScroll) return;
+
     setTimeout(() => {
-      const el = this.scrollEl?.nativeElement;
-      if (el) el.scrollTop = el.scrollHeight;
-    }, 100);
+      const scrollContainer = this.scrollEl?.nativeElement;
+      if (!scrollContainer) return;
+
+      scrollContainer.scrollTop = scrollContainer.scrollHeight;
+    }, 50);
   }
 
   ngAfterViewChecked() {
@@ -170,6 +182,8 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
 
   selectModel(model: ModelDetails) {
     this.selectedModel = model;
+    this.autoScroll = true;
+    this.scrollToBottom();
     this.overlayPanel.hide();
   }
 
@@ -178,18 +192,27 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
   }
 
   likeMessage(msg: Message) {
-    console.log('Liked message:', msg);
     // You can send this info to server if needed
   }
 
   dislikeMessage(msg: Message) {
-    console.log('Disliked message:', msg);
     // You can send this info to server if needed
   }
+
   regenerateMessage(msg: Message) {
     if (!msg.text) return;
     this.userChatMsg = msg.userQuery || '';
+    this.autoScroll = true;
     this.send();
+    this.scrollToBottom();
   }
 
+  onScroll() {
+    const scrollElement = this.scrollEl?.nativeElement;
+    if (!scrollElement) return;
+    const atBottom =
+      scrollElement.scrollHeight - scrollElement.scrollTop <=
+      scrollElement.clientHeight + 1;
+    this.autoScroll = atBottom;
+  }
 }
