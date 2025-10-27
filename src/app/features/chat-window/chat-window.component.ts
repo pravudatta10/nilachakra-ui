@@ -131,11 +131,7 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
       if (charIndex < answerText.length) {
         assistantMessage.text += answerText.charAt(charIndex);
         charIndex++;
-
-        // Scroll every few characters to prevent flickering
-        if (charIndex % 2 === 0) {
-          this.scrollToBottom();
-        }
+        this.scrollToBottom();
       } else {
         clearInterval(typingInterval);
         assistantMessage.isTyping = false;
@@ -153,7 +149,7 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
       if (!scrollContainer) return;
 
       scrollContainer.scrollTop = scrollContainer.scrollHeight;
-    }, 50);
+    }, 100);
   }
 
   ngAfterViewChecked() {
