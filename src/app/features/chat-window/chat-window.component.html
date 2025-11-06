@@ -9,7 +9,7 @@
     </div>
 
     <!-- Messages -->
-    <div *ngFor="let m of messages" class="message" [ngClass]="m.role">
+    <div *ngFor="let m of messages; let i = index" class="message" [ngClass]="m.role">
       <div class="bubble">
         <!-- Render everything with markdown -->
         <markdown [data]="m.text"></markdown>
@@ -22,8 +22,14 @@
         </span>
 
         <div *ngIf="m.role === 'assistant' && !m.isTyping" class="message-footer-float">
+          <!-- Copy button -->
+          <span class="footer-btn cursor-pointer"
+            [ngClass]="copiedIndex === i ? 'pi pi-check text-green-500' : 'pi pi-copy'" (click)="copyMessage(m, i)"
+            pTooltip="{{ copiedIndex === i ? 'Copied!' : 'Copy to Clipboard' }}" tooltipPosition="top">
+          </span>
+
           <!-- Regenerate button -->
-          <span class="regen-btn pi pi-sync" (click)="regenerateMessage(m)" pTooltip="Regenerate Response"
+          <span class="footer-btn pi pi-sync" (click)="regenerateMessage(m)" pTooltip="Regenerate Response"
             tooltipPosition="top">
           </span>
 
@@ -49,8 +55,9 @@
         (input)="autoGrow($event)" rows="2" class="chat-textarea"></textarea>
       <button pButton type="button" icon="pi pi-box" (click)="overlayPanel.toggle($event)" pTooltip="Select Model"
         tooltipPosition="top" tooltipEvent="hover"></button>
-      <button pButton type="button" icon="pi pi-send" (click)="send()"
+      <button pButton type="button" icon="pi pi-send" (click)="send()" *ngIf="!isStreaming"
         [disabled]="!userChatMsg.trim() || isSendDisabled"></button>
+      <button pButton type="button" icon="pi pi-stop" (click)="stop()" *ngIf="isStreaming"></button>
     </div>
 
     <p-overlayPanel #overlayPanel [dismissable]="true" [style]="{'width':'320px'}">

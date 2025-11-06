@@ -47,6 +47,9 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
   conversationId: number | null = null;
   isSendDisabled = false;
   autoScroll = true;
+  copiedIndex: number | null = null;
+  isStreaming = false;
+  nonStreaming = false;
   constructor(private globalService: GlobalService) { }
 
   ngOnInit() {
@@ -107,14 +110,52 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
     };
 
     // Call AI query (skip loader)
-    this.globalService.aiQueries(this.queryPayload, true).subscribe({
-      next: (res: ChatResponse) => this.handleAIResponse(res, assistantMsg),
-      error: () => {
-        assistantMsg.text = 'Sorry, something went wrong!';
-        assistantMsg.isTyping = false;
-        this.scrollToBottom();
-      }
-    });
+    if (this.selectedModel.modelName === 'openai/gpt-oss-20b:free') {
+      this.globalService.aiQueries(this.queryPayload, true).subscribe({
+        next: (res: ChatResponse) => this.handleAIResponse(res, assistantMsg),
+        error: () => {
+          assistantMsg.text = 'Sorry, something went wrong!';
+          assistantMsg.isTyping = false;
+          this.scrollToBottom();
+        }
+      });
+    } else {
+      const stream$ = this.globalService.aiQueriesStream(this.queryPayload);
+      const subscription = stream$.subscribe({
+        next: (res: ChatResponse) => {
+          assistantMsg.showThreeDots = false;
+          if (res.answer) {
+            if (res.streamId != null) {
+              this.isStreaming = true;
+              assistantMsg.text += res.answer;
+            } else {
+              assistantMsg.text = '';
+              assistantMsg.text = res.answer;
+            }
+            this.scrollToBottom();
+          }
+          if (res.conversationId) {
+            this.conversationId = res.conversationId;
+          }
+        },
+        complete: () => {
+          assistantMsg.isTyping = false;
+          this.isStreaming = false;
+          this.isSendDisabled = false;
+          this.scrollToBottom();
+        },
+        error: (err) => {
+          console.error('Stream error:', err);
+          assistantMsg.text = 'Something went wrong.';
+          assistantMsg.isTyping = false;
+          this.isStreaming = false;
+          this.isSendDisabled = false;
+        }
+      });
+    }
+  }
+  stop() {
+    this.globalService.stopStreaming().subscribe();
   }
   private handleAIResponse(response: ChatResponse, assistantMessage: Message): void {
     const answerText = response.answer;
@@ -125,7 +166,7 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
     this.isSendDisabled = true;
 
     let charIndex = 0;
-    const typingSpeed = 15; // milliseconds per character
+    const typingSpeed = 5; // milliseconds per character
 
     const typingInterval = setInterval(() => {
       if (charIndex < answerText.length) {
@@ -210,5 +251,14 @@ export class ChatWindowComponent implements OnInit, AfterViewChecked {
       scrollElement.scrollHeight - scrollElement.scrollTop <=
       scrollElement.clientHeight + 1;
     this.autoScroll = atBottom;
+  }
+
+  copyMessage(message: Message, index: number): void {
+    navigator.clipboard.writeText(message.text).then(() => {
+      this.copiedIndex = index;
+      setTimeout(() => {
+        this.copiedIndex = null;
+      }, 1500);
+    });
   }
 }

@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
@@ -37,11 +37,11 @@ export class GlobalService {
   // --- Chat stream ---
   private chatSource = new BehaviorSubject<string>('');
   private continueChatSource = new BehaviorSubject<number>(0);
-
+  private activeStreamId: string | null = null;
   chat$ = this.chatSource.asObservable();
   continueChat$ = this.continueChatSource.asObservable();
 
-  constructor(private http: HttpClient, private responseHandler: ResponseHandlerService) { }
+  constructor(private http: HttpClient, private responseHandler: ResponseHandlerService, private zone: NgZone) { }
 
   // --- Generic API call ---
   apiCall<T>(
@@ -104,4 +104,74 @@ export class GlobalService {
   deleteChat(conversationId: number, skipLoader: boolean = false): Observable<any> {
     return this.apiCall<any>(`/chats/delete/${conversationId}`, 'DELETE', undefined, undefined, skipLoader);
   }
+  stopStreaming(): Observable<any> {
+    if (this.activeStreamId === null) {
+      throw new Error('No active stream to stop.');
+    }
+    return this.apiCall<any>(`/conversations/stop/${this.activeStreamId}`, 'POST');
+  }
+  // --- STREAMING API ---  
+  aiQueriesStream(payload: ChatRequest): Observable<ChatResponse> {
+    return new Observable<ChatResponse>(observer => {
+      const streamUrl = `${this.apiBaseUrl}/ai/queries/stream`;
+
+      let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
+      let cancel = false;
+
+      fetch(streamUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'text/event-stream'
+        },
+        body: JSON.stringify(payload)
+      })
+        .then(response => {
+          if (!response.ok || !response.body) {
+            throw new Error(`Stream connection failed: ${response.status}`);
+          }
+
+          reader = response.body.getReader();
+          const decoder = new TextDecoder('utf-8');
+
+          const readStream = async () => {
+            while (!cancel) {
+              const { done, value } = await reader!.read();
+              if (done || cancel) break;
+
+              const chunk = decoder.decode(value, { stream: true });
+              const lines = chunk.split('\n');
+
+              for (const line of lines) {
+                if (line.startsWith('data:')) {
+                  const data = line.replace(/^data:\s*/, '');
+                  try {
+                    const parsed = JSON.parse(data);
+                    if (parsed.streamId) {
+                      this.activeStreamId = parsed.streamId;
+                    }
+                    if(parsed.answer === '[DONE]') {
+                      continue;
+                    }
+                    observer.next(parsed);
+                  } catch { 
+                    observer.next(data as unknown as ChatResponse);
+                  }
+                }
+              }
+            }
+            observer.complete();
+          };
+          readStream().catch(err => observer.error(err));
+        })
+        .catch(err => observer.error(err)); 
+      return () => {
+        cancel = true;
+        if (reader) {
+          reader.cancel().catch(() => { });
+        }
+      };
+    });
+  }
 }
+

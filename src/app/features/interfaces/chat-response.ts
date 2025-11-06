@@ -8,4 +8,5 @@ export interface ChatResponse {
     conversationId: number;
     title: string;
     error: string | null;
+    streamId?: string;
 }
